@@ -1,6 +1,7 @@
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cmath>
+#include <ctime>
 
 #include "Chip_8.h"
 
@@ -12,17 +13,25 @@ Chip_8::Chip_8() {
     }
     // Programs begin at 512
     pc = 512;
-    // Display begins at 0xf00
+    // Display
     display = new unsigned char[Width*Height];
     for (int i=0; i<Width*Height; i++)
         display[i] = 0;
     // Stack init
     for (int i=0; i<16; i++)
         stack[i] = 0;
+    // Keys init
+    for (int i=0; i<16; i++)
+        keys[i] = false;
+    // Registry init
+    for (int i=0; i<16; i++)
+        V[i] = 0;
 
     // Initialize EVERYTHING to 0
     I = 0;
     sp = 0;
+    srand(time(NULL));
+    key_store = 0;
 
     waitForKey = false;
 
@@ -31,8 +40,6 @@ Chip_8::Chip_8() {
     drawf = true;
     error = false;
     error_txt = "";
-
-    distribution = uniform_int_distribution<unsigned short>(0, 0xffff);
 }
 
 void Chip_8::loadHexSprites() {
@@ -172,6 +179,8 @@ bool Chip_8::displaySprite(unsigned char x, unsigned char y, unsigned char n_byt
         unsigned char sprite = memory[I + by];
         for (int bx = 0; bx < 8; bx++) {
             if ((sprite & (0x80 >> bx)) != 0) {
+                if (x+bx+(y+by)*64 >= 2048)
+                    continue;
                 if (display[(x + bx) + ((y + by) * 64)] == 1) {
                     V[0xF] = 1;
                 }
@@ -486,7 +495,7 @@ void Chip_8::emulateStep() {
             break;
         case 0xc:
             // Sets VX to random number masked by NN
-            V[code[0]&0xf] = distribution(generator) & code[1];
+            V[code[0]&0xf] = rand() & code[1];
             pc += 2;
             break;
         case 0xd:

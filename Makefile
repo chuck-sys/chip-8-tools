@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -g -c -std=c++11
+CFLAGS := -g -c -std=c++0x
 LD := g++
 LDFLAGS := -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system
 

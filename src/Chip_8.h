@@ -27,9 +27,6 @@ class Chip_8 {
         bool keys[16];                  // Hex based keypad with 16 keys
         bool waitForKey;
 
-        default_random_engine generator;
-        uniform_int_distribution<unsigned short> distribution;
-
         /* Loads the game file into memory */
         bool loadGame(const char *filename);
 
