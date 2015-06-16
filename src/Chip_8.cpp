@@ -16,6 +16,9 @@ Chip_8::Chip_8() {
     display = new unsigned char[Width*Height];
     for (int i=0; i<Width*Height; i++)
         display[i] = 0;
+    // Stack init
+    for (int i=0; i<16; i++)
+        stack[i] = 0;
 
     // Initialize EVERYTHING to 0
     I = 0;
@@ -225,34 +228,53 @@ void Chip_8::initialize(const char *filename) {
 
 void Chip_8::handleKeyPress(const Keyboard::Key key) {
     switch (key) {
-        case Keyboard::Up:
-        case Keyboard::W:
+        case Keyboard::Num1:
+            keys[1] = true;
+            break;
         case Keyboard::Num2:
-        case Keyboard::Numpad2:
             keys[2] = true;
             break;
-        case Keyboard::Down:
-        case Keyboard::S:
-        case Keyboard::Num8:
-        case Keyboard::Numpad8:
-            keys[8] = true;
+        case Keyboard::Num3:
+            keys[3] = true;
             break;
-        case Keyboard::Left:
-        case Keyboard::A:
         case Keyboard::Num4:
-        case Keyboard::Numpad4:
+            keys[0xc] = true;
+            break;
+        case Keyboard::Q:
             keys[4] = true;
             break;
-        case Keyboard::Right:
-        case Keyboard::D:
-        case Keyboard::Num6:
-        case Keyboard::Numpad6:
+        case Keyboard::W:
+            keys[5] = true;
+            break;
+        case Keyboard::E:
             keys[6] = true;
             break;
-        case Keyboard::Space:
-        case Keyboard::Num0:
-        case Keyboard::Numpad0:
+        case Keyboard::R:
+            keys[0xd] = true;
+            break;
+        case Keyboard::A:
+            keys[7] = true;
+            break;
+        case Keyboard::S:
+            keys[8] = true;
+            break;
+        case Keyboard::D:
+            keys[9] = true;
+            break;
+        case Keyboard::F:
+            keys[0xe] = true;
+            break;
+        case Keyboard::Z:
+            keys[0xa] = true;
+            break;
+        case Keyboard::X:
             keys[0] = true;
+            break;
+        case Keyboard::C:
+            keys[0xb] = true;
+            break;
+        case Keyboard::V:
+            keys[0xf] = true;
             break;
         default:
             break;
@@ -267,34 +289,53 @@ void Chip_8::handleKeyPress(const Keyboard::Key key) {
 
 void Chip_8::handleKeyUp(const Keyboard::Key key) {
     switch (key) {
-        case Keyboard::Up:
-        case Keyboard::W:
+        case Keyboard::Num1:
+            keys[1] = false;
+            break;
         case Keyboard::Num2:
-        case Keyboard::Numpad2:
             keys[2] = false;
             break;
-        case Keyboard::Down:
-        case Keyboard::S:
-        case Keyboard::Num8:
-        case Keyboard::Numpad8:
-            keys[8] = false;
+        case Keyboard::Num3:
+            keys[3] = false;
             break;
-        case Keyboard::Left:
-        case Keyboard::A:
         case Keyboard::Num4:
-        case Keyboard::Numpad4:
+            keys[0xc] = false;
+            break;
+        case Keyboard::Q:
             keys[4] = false;
             break;
-        case Keyboard::Right:
-        case Keyboard::D:
-        case Keyboard::Num6:
-        case Keyboard::Numpad6:
+        case Keyboard::W:
+            keys[5] = false;
+            break;
+        case Keyboard::E:
             keys[6] = false;
             break;
-        case Keyboard::Space:
-        case Keyboard::Num0:
-        case Keyboard::Numpad0:
+        case Keyboard::R:
+            keys[0xd] = false;
+            break;
+        case Keyboard::A:
+            keys[7] = false;
+            break;
+        case Keyboard::S:
+            keys[8] = false;
+            break;
+        case Keyboard::D:
+            keys[9] = false;
+            break;
+        case Keyboard::F:
+            keys[0xe] = false;
+            break;
+        case Keyboard::Z:
+            keys[0xa] = false;
+            break;
+        case Keyboard::X:
             keys[0] = false;
+            break;
+        case Keyboard::C:
+            keys[0xb] = false;
+            break;
+        case Keyboard::V:
+            keys[0xf] = false;
             break;
         default:
             break;

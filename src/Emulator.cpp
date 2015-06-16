@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
         }
 
         // Query FPS
-        window->setTitle(title + " | FPS: " + to_string(1/c.getElapsedTime().asSeconds()));
+        //window->setTitle(title + " | FPS: " + to_string(1/c.getElapsedTime().asSeconds()));
 
         // Clock FPS
         while (c.getElapsedTime().asSeconds() < 1./60) {}
