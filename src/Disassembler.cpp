@@ -4,13 +4,13 @@
 
 using namespace std;
 
-void emulateStep(unsigned char *buffer, unsigned int pc, bool clean) {
+void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned short offset=0x200) {
     // Run an opcode
     unsigned char *code = &buffer[pc];
     unsigned char hinib = code[0] >> 4;
 
     if (!clean)
-        printf("%04x: ", pc+0x200);
+        printf("%04x: ", pc+offset);
 
     switch (hinib) {
         case 0x0:
@@ -22,6 +22,10 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean) {
                 case 0xee:
                     // 00EE: Returns from subroutine
                     printf("RET");
+                    break;
+                default:
+                    // If it is a piece of data, insert directly into output
+                    printf("%02x%02x", code[0], code[1]);
                     break;
             }
             break;
@@ -81,12 +85,10 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean) {
                     printf("XORR\tV[%x], V[%x]", code[0]&0xf, code[1]>>4);
                     break;
                 case 0x4:
-                    {
-                        // VX += VY, set VF = carry
-                        // ADC
-                        printf("ADC\tV[%x], V[%x]", code[0]&0xf, code[1]>>4);
-                        break;
-                    }
+                    // VX += VY, set VF = carry
+                    // ADC
+                    printf("ADC\tV[%x], V[%x]", code[0]&0xf, code[1]>>4);
+                    break;
                 case 0x5:
                     // VX -= VY, set VF = 0 if borrow, 1 if no borrow
                     // SBB
@@ -106,6 +108,10 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean) {
                     // Set VF = most significant bit VX, VX <<= 1
                     // SLS (Shift Left Save (bit))
                     printf("SLS\tV[%x]", code[0]&0xf);
+                    break;
+                default:
+                    // If it is a piece of data, insert directly into output
+                    printf("%02x%02x", code[0], code[1]);
                     break;
             }
             break;
@@ -146,6 +152,10 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean) {
                     // Skip next instruction if key[VX] is not pressed
                     // SKNP
                     printf("SKNP\tK[%x]", code[0]&0xf);
+                    break;
+                default:
+                    // If it is a piece of data, insert directly into output
+                    printf("%02x%02x", code[0], code[1]);
                     break;
             }
             break;
@@ -198,6 +208,10 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean) {
                     // POPA
                     printf("POPA\tV[%x]", code[0]&0xf);
                     break;
+                default:
+                    // If it is a piece of data, insert directly into output
+                    printf("%02x%02x", code[0], code[1]);
+                    break;
             }
             break;
         default:
@@ -216,9 +230,16 @@ int main(int argc, char **argv) {
         return -1;
     }
     bool clean = false;
-    if (argc == 3) {
-        if (strcmp(argv[2], "-c") == 0)
+    bool padded = true;
+    for (int i=0; i<argc; i++) {
+        if (strcmp(argv[i], "-c") == 0)
             clean = true;
+        if (strcmp(argv[i], "--clean") == 0)
+            clean = true;
+        if (strcmp(argv[i], "-n") == 0)
+            padded = false;
+        if (strcmp(argv[i], "--no-padding") == 0)
+            padded = false;
     }
 
     // Programs normally begin at
@@ -247,11 +268,14 @@ int main(int argc, char **argv) {
 
 
 
+    unsigned short offset = 0;
+    if (padded)
+        offset = 0x200;
 
 
 
     for (unsigned int pc=0; pc<file_size; pc+=2) {
-        emulateStep(buffer, pc, clean);
+        emulateStep(buffer, pc, clean, offset);
     }
 
     return 0;
