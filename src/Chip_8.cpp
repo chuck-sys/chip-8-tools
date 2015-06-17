@@ -179,8 +179,6 @@ bool Chip_8::displaySprite(unsigned char x, unsigned char y, unsigned char n_byt
         unsigned char sprite = memory[I + by];
         for (int bx = 0; bx < 8; bx++) {
             if ((sprite & (0x80 >> bx)) != 0) {
-                if (x+bx+(y+by)*64 >= 2048)
-                    continue;
                 if (display[(x + bx) + ((y + by) * 64)] == 1) {
                     V[0xF] = 1;
                 }
@@ -563,11 +561,11 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x55:
                     // Push all registers V[0..X] to location I
-                    pushRegisters(V[code[0]&0xf]);
+                    pushRegisters(code[0]&0xf);
                     break;
                 case 0x65:
                     // Reads from memory to registers V[0..X] starting from I
-                    popRegisters(V[code[0]&0xf]);
+                    popRegisters(code[0]&0xf);
                     break;
             }
             pc += 2;
