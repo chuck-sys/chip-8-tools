@@ -31,7 +31,6 @@ int main(int argc, char **argv) {
     fg = Color::White;
     string title = argv[1];
     RenderWindow *window = new RenderWindow(VideoMode(800, 500), argv[1]);      // Filename is the title
-    Clock c;
 
     // Initializations with the chip8 cpu
     c8cpu->initialize(argv[1]);
@@ -103,13 +102,6 @@ int main(int argc, char **argv) {
                 beep.pause();
             }
         }
-
-        // Query FPS
-        //window->setTitle(title + " | FPS: " + to_string(1/c.getElapsedTime().asSeconds()));
-
-        // Clock FPS
-        while (c.getElapsedTime().asSeconds() < 1./60) {}
-        c.restart();
     }
 
 
