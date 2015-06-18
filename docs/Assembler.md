@@ -41,3 +41,9 @@ BCD | Fx33 | `BCD 0x0` | Stores BCD representation of V[x] in memory location I,
 PUSHA | Fx55 | `PUSHA 0xf` | Pushes all registers from V[0] to V[x] inclusive to location I, I+1, ...
 POPA | Fx65 | `POPA 0xf` | Pops all registers from V[0] to V[x] inclusive from location I, I+1, ...
 
+
+### Extra Commands
+
+Mnemonic | Opcode | Usage | Description
+---------|--------|-------|------------
+DATA | _NONE_ | `DATA 0x0001, 0x0009, 0x9a83, ...` | Inserts raw data (the arguments) into the resulting binary
