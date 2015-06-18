@@ -188,8 +188,6 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned sh
                     break;
                 case 0x29:
                     // I = location of sprite for digit VX
-                    // Hex sprites are 8x5 bits
-                    // They start at 0x00, so index them
                     // SETH (SET Hex)
                     printf("SETH\tV[%x]", code[0]&0xf);
                     break;
