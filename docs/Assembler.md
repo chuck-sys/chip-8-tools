@@ -47,3 +47,23 @@ POPA | Fx65 | `POPA vf` | Pops all registers from V[0] to V[x] inclusive from lo
 Mnemonic | Opcode | Usage | Description
 ---------|--------|-------|------------
 DATA | _NONE_ | `DATA 0x0001, 0x0009, 0x9a83, ...` | Inserts raw data (the arguments) into the resulting binary
+
+
+### Syntax
+
+```
+; Infinite loop
+JMP 0x200
+```
+
+Comments are one-liners starting with `;` character.
+
+```
+SETI sprite1
+DSP v0, v1, 0x2
+
+sprite1:
+data 0x000f
+```
+
+For convenience's sake, all addresses can be labelled.
