@@ -29,8 +29,7 @@ SVVNE | 9xy0 | `SVVNE 0x0, 0x1` | Skips the next instruction if V[x] != V[y]
 SETI | Annn | `SETI 0x29a` | Sets index register I to nnn
 JAR | Bnnn | `JAR 0x29b` | Jumps to address nnn+V[0]
 RNRM | Cxnn | `RNRM 0x0, 0x01` | Sets V[x] to a random number masked by nn
-DSP | Dxyn | `DSP 0x0, 0x1, 0x2` | Reads n bytes from memory, and displays them at (V[x], V[y]); Sets V[0xf] to whether any pixel
-collided (collided? 1:0)
+DSP | Dxyn | `DSP 0x0, 0x1, 0x2` | Reads n bytes from memory, and displays them at (V[x], V[y]); Sets V[0xf] to whether any pixel collided (collided? 1:0)
 SKP | Ex9E | `SKP 0x0` | Skips the next instruction if key[V[x]] is pressed
 SKNP | ExA1 | `SKNP 0x0` | Skips the next instruction if key[V[x]] is _NOT_ pressed
 SRD | Fx07 | `SRD 0x0` | Sets V[x] to the value in delay timer DT
