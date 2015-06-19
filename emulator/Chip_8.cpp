@@ -208,7 +208,7 @@ bool Chip_8::loadGame(const char *filename) {
     fseek(f, 0, SEEK_SET);
 
     // Read file to buffer
-    fread(buffer, file_size, 1, f);
+    fread(buffer, 1, file_size, f);
 
     fclose(f);
 
