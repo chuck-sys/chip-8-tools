@@ -33,7 +33,7 @@ DSP | Dxyn | `DSP v0, v1, 0x2` | Reads n bytes from memory, and displays them at
 SKP | Ex9E | `SKP v0` | Skips the next instruction if key[V[x]] is pressed
 SKNP | ExA1 | `SKNP v0` | Skips the next instruction if key[V[x]] is _NOT_ pressed
 SRD | Fx07 | `SRD v0` | Sets V[x] to the value in delay timer DT
-WKP | Fx0A | `WKP v0` | Waits for a keypress, then stores the value of pressed key in V[x]
+WKP | Fx0A | `WKP v0` | Waits for a key press, then stores the value of pressed key in V[x]
 SDR | Fx15 | `SDR v0` | Sets DT to the value in V[x]
 SSR | Fx18 | `SSR v0` | Sets ST sound timer to the value in V[x]
 SETH | Fx29 | `SETH v0` | Sets index register I to the location of the sprite for digit V[x]
@@ -66,4 +66,4 @@ sprite1:
 data 0x000f
 ```
 
-For convenience's sake, all addresses can be labelled.
+For convenience's sake, all addresses can be labeled.
