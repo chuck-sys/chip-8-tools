@@ -10,6 +10,5 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 add_subdirectory ("${PROJECT_SOURCE_DIR}/emulator")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/disassembler")
-add_subdirectory ("${PROJECT_SOURCE_DIR}/assembler")
 
 include_directories ("${PROJECT_BINARY_DIR}")
