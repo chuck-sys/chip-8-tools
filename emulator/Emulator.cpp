@@ -61,11 +61,11 @@ int main(int argc, char **argv) {
                 window->close();
             else if (evt.type == Event::KeyPressed) {
                 // Handle key pressed
-                c8cpu->handleKeyPress(evt.key.code);
+                c8cpu->handleKey(evt.key.code, true);
             }
             else if (evt.type == Event::KeyReleased) {
                 // Handle key released
-                c8cpu->handleKeyUp(evt.key.code);
+                c8cpu->handleKey(evt.key.code, false);
             }
         }
 

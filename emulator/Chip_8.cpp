@@ -188,7 +188,6 @@ bool Chip_8::displaySprite(unsigned char x, unsigned char y, unsigned char n_byt
     }
 }
 
-
 bool Chip_8::loadGame(const char *filename) {
     // Programs normally begin at
     // memory location 512 and above, so
@@ -233,119 +232,64 @@ void Chip_8::initialize(const char *filename) {
     loadHexSprites();
 }
 
-void Chip_8::handleKeyPress(const Keyboard::Key key) {
+void Chip_8::handleKey(const Keyboard::Key key, bool pressed) {
     switch (key) {
         case Keyboard::Num1:
-            keys[1] = true;
+            keys[1] = pressed;
             break;
         case Keyboard::Num2:
-            keys[2] = true;
+            keys[2] = pressed;
             break;
         case Keyboard::Num3:
-            keys[3] = true;
+            keys[3] = pressed;
             break;
         case Keyboard::Num4:
-            keys[0xc] = true;
+            keys[0xc] = pressed;
             break;
         case Keyboard::Q:
-            keys[4] = true;
+            keys[4] = pressed;
             break;
         case Keyboard::W:
-            keys[5] = true;
+            keys[5] = pressed;
             break;
         case Keyboard::E:
-            keys[6] = true;
+            keys[6] = pressed;
             break;
         case Keyboard::R:
-            keys[0xd] = true;
+            keys[0xd] = pressed;
             break;
         case Keyboard::A:
-            keys[7] = true;
+            keys[7] = pressed;
             break;
         case Keyboard::S:
-            keys[8] = true;
+            keys[8] = pressed;
             break;
         case Keyboard::D:
-            keys[9] = true;
+            keys[9] = pressed;
             break;
         case Keyboard::F:
-            keys[0xe] = true;
+            keys[0xe] = pressed;
             break;
         case Keyboard::Z:
-            keys[0xa] = true;
+            keys[0xa] = pressed;
             break;
         case Keyboard::X:
-            keys[0] = true;
+            keys[0] = pressed;
             break;
         case Keyboard::C:
-            keys[0xb] = true;
+            keys[0xb] = pressed;
             break;
         case Keyboard::V:
-            keys[0xf] = true;
+            keys[0xf] = pressed;
             break;
         default:
             break;
     }
 
-    if (waitForKey) {
+    if (pressed && waitForKey) {
         waitForKey = false;
         keys[key_store] = true;
         pc += 2;
-    }
-}
-
-void Chip_8::handleKeyUp(const Keyboard::Key key) {
-    switch (key) {
-        case Keyboard::Num1:
-            keys[1] = false;
-            break;
-        case Keyboard::Num2:
-            keys[2] = false;
-            break;
-        case Keyboard::Num3:
-            keys[3] = false;
-            break;
-        case Keyboard::Num4:
-            keys[0xc] = false;
-            break;
-        case Keyboard::Q:
-            keys[4] = false;
-            break;
-        case Keyboard::W:
-            keys[5] = false;
-            break;
-        case Keyboard::E:
-            keys[6] = false;
-            break;
-        case Keyboard::R:
-            keys[0xd] = false;
-            break;
-        case Keyboard::A:
-            keys[7] = false;
-            break;
-        case Keyboard::S:
-            keys[8] = false;
-            break;
-        case Keyboard::D:
-            keys[9] = false;
-            break;
-        case Keyboard::F:
-            keys[0xe] = false;
-            break;
-        case Keyboard::Z:
-            keys[0xa] = false;
-            break;
-        case Keyboard::X:
-            keys[0] = false;
-            break;
-        case Keyboard::C:
-            keys[0xb] = false;
-            break;
-        case Keyboard::V:
-            keys[0xf] = false;
-            break;
-        default:
-            break;
     }
 }
 

@@ -62,8 +62,7 @@ class Chip_8 {
         Chip_8();
 
         void initialize(const char *filename);
-        void handleKeyPress(const Keyboard::Key key);
-        void handleKeyUp(const Keyboard::Key key);
+        void handleKey(const Keyboard::Key key, bool pressed);
         void emulateStep();
         void drawDisplay(RenderWindow *w, Color bg, Color fg);
 };
