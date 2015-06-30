@@ -1,8 +1,8 @@
 language: cpp
 
 install:
-    - wget http://www.sfml-dev.org/download/sfml/2.1/SFML-2.1-linux-gcc-64bits.tar.bz2
-    - tar xf SFML-2.1-linux-gcc-64bits.tar.bz2
+    - wget http://www.sfml-dev.org/files/SFML-2.3-linux-gcc-64-bit.tar.gz
+    - tar xf SFML-2.3-linux-gcc-64-bit.tar.gz
     - sudo cp -r SFML-2.1/lib/* /usr/local/lib/.
     - sudo cp -r SFML-2.1/include/* /usr/local/include/.
 
