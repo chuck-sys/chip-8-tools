@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (Chip8_Tools)
+enable_testing ()
 
 # Versioning
 set (Chip8_Tools_VERSION_MAJOR 0)
