@@ -1,2 +1,9 @@
 language: cpp
-script: cmake .
+
+install:
+    - sudo apt-get install libsfml-dev
+
+script:
+    - mkdir build && cd build
+    - cmake ..
+    - make
