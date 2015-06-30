@@ -1,9 +1,10 @@
 language: cpp
 
 install:
-    - sudo add-apt-repository -y ppa:sonkun/sfml
-    - sudo apt-get update
-    - sudo apt-get install libsfml2-dev
+    - wget http://www.sfml-dev.org/download/sfml/2.1/SFML-2.1-linux-gcc-64bits.tar.bz2
+    - tar xf SFML-2.1-linux-gcc-64bits.tar.bz2
+    - sudo cp -r SFML-2.1/lib/* /usr/local/lib/.
+    - sudo cp -r SFML-2.1/include/* /usr/local/include/.
 
 script:
     - mkdir build && cd build
