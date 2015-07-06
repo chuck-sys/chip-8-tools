@@ -318,12 +318,21 @@ void Chip_8::emulateStep() {
     unsigned char *code = &memory[pc];
     unsigned char hinib = code[0] >> 4;
 
+    // Some useful variables
+    unsigned nnn = ((code[0]&0xf) << 8) | code[1];
+    unsigned nn = code[1];
+    unsigned n = code[1] & 0xf;
+    unsigned x = code[0] & 0xf;
+    unsigned y = code[1] >> 4;
+    // Register aliases
+    unsigned char &Vx = V[x], &Vy = V[y], &VF = V[0xf];
+
     // Debug
     //printf("%04x: %x%x\n", pc, code[0], code[1]);
 
     switch (hinib) {
         case 0x0:
-            switch (code[1]) {
+            switch (nn) {
                 case 0xe0:
                     // 00E0: Clears the screen
                     clearScreen();
@@ -342,158 +351,156 @@ void Chip_8::emulateStep() {
             break;
         case 0x1:
             // Jumps to address
-            pc = ((code[0]&0xf) << 8) | code[1];
+            pc = nnn;
             break;
         case 0x2:
             // Calls subroutine at address
             stack[sp++] = pc;
-            stack[sp] = ((code[0]&0xf) << 8) | code[1];
+            stack[sp] = nnn;
             pc = stack[sp];
             break;
         case 0x3:
             // Skips next instruction if VX == NN
-            pc += 2 + (V[code[0]&0xf] == code[1]? 2: 0);
+            pc += 2 + (Vx == nn? 2: 0);
             break;
         case 0x4:
             // Skips next instruction if VX != NN
-            pc += 2 + (V[code[0]&0xf] != code[1]? 2: 0);
+            pc += 2 + (Vx != nn? 2: 0);
             break;
         case 0x5:
             // Skips next instruction if VX == VY
-            pc += 2 + (V[code[0]&0xf] == V[code[1]>>4]? 2: 0);
+            pc += 2 + (Vx == Vy? 2: 0);
             break;
         case 0x6:
             // Set VX to NN
-            V[code[0]&0xf] = code[1];
+            Vx = nn;
             pc += 2;
             break;
         case 0x7:
             // Adds NN to VX
-            V[code[0]&0xf] += code[1];
+            Vx += nn;
             pc += 2;
             break;
         case 0x8:
-            switch (code[1]&0xf) {
+            switch (n) {
                 case 0x0:
                     // VX = VY
-                    V[code[0]&0xf] = V[code[1]>>4];
+                    Vx = Vy;
                     break;
                 case 0x1:
                     // VX |= VY
-                    V[code[0]&0xf] |= V[code[1]>>4];
+                    Vx |= Vy;
                     break;
                 case 0x2:
                     // VX &= VY
-                    V[code[0]&0xf] &= V[code[1]>>4];
+                    Vx &= Vy;
                     break;
                 case 0x3:
                     // VX xor= VY
-                    V[code[0]&0xf] ^= V[code[1]>>4];
+                    Vx ^= Vy;
                     break;
                 case 0x4:
                     {
                         // VX += VY, set VF = carry
-                        unsigned int add = V[code[0]&0xf] + V[code[1]>>4];
-                        V[code[0]&0xf] = (unsigned short) add&0x00ff;
-                        V[0xf] = (unsigned short) add >> 8;
+                        unsigned int add = Vx + Vy;
+                        Vx = (unsigned short) add&0x00ff;
+                        VF = (unsigned short) add >> 8;
                         break;
                     }
                 case 0x5:
                     // VX -= VY, set VF = 0 if borrow, 1 if no borrow
-                    V[0xf] = V[code[0]&0xf] >= V[code[1]>>4]? 1: 0;
-                    V[code[0]&0xf] -= V[code[1]>>4];
+                    VF = Vx >= Vy? 1: 0;
+                    Vx -= Vy;
                     break;
                 case 0x6:
                     // Set VF = least significant bit VX, VX >>= 1
-                    V[0xf] = V[code[0]&0xf]&0x1;
-                    V[code[0]&0xf] >>= 1;
+                    VF = Vx&0x1;
+                    Vx >>= 1;
                     break;
                 case 0x7:
                     // VX = VY - VX, set VF = 0 if borrow, 1 if no borrow
-                    V[0xf] = V[code[0]&0xf] <= V[code[1]>>4]? 1: 0;
-                    V[code[0]&0xf] = V[code[1]>>4] - V[code[0]&0xf];
+                    VF = Vx <= Vy? 1: 0;
+                    Vx = Vy - Vx;
                     break;
                 case 0xe:
                     // Set VF = most significant bit VX, VX <<= 1
-                    V[0xf] = V[code[0]&0xf]>>7;
-                    V[code[0]&0xf] <<= 1;
+                    VF = Vx>>7;
+                    Vx <<= 1;
                     break;
             }
             pc += 2;
             break;
         case 0x9:
             // Skips next instruction if VX != VY
-            pc += 2 + (V[code[0]&0xf] != V[code[1]>>4]? 2: 0);
+            pc += 2 + (Vx != Vy? 2: 0);
             break;
         case 0xa:
             // Sets index register I to NNN
-            I = ((code[0]&0xf) << 8) | code[1];
+            I = nnn;
             pc += 2;
             break;
         case 0xb:
             // Jumps to address NNN+V0
-            pc = ((code[0]&0xf) << 8) | code[1];
-            pc += V[0];
+            pc = nnn+V[0];
             break;
         case 0xc:
             // Sets VX to random number masked by NN
-            V[code[0]&0xf] = rand() & code[1];
+            Vx = rand() & nn;
             pc += 2;
             break;
         case 0xd:
             // Reads N bytes from memory, displays them at coords (VX, VY),
             // VF = XORed collision pixels (1 if collide, 0 if no collide
-            V[0xf] = (unsigned short) displaySprite(V[code[0]&0xf], V[code[1]>>4], code[1]&0xf);
+            VF = (unsigned short) displaySprite(Vx, Vy, n);
             pc += 2;
             drawf = true;
             break;
         case 0xe:
-            switch (code[1]) {
+            switch (nn) {
                 case 0x9e:
                     // Skip next instruction if key[VX] is pressed
-                    pc += 2 + (keys[V[code[0]&0xf]]? 2: 0);
+                    pc += 2 + (keys[Vx]? 2: 0);
                     break;
                 case 0xa1:
                     // Skip next instruction if key[VX] is not pressed
-                    pc += 2 + (keys[V[code[0]&0xf]]? 0: 2);
+                    pc += 2 + (keys[Vx]? 0: 2);
                     break;
             }
             break;
         case 0xf:
-            switch (code[1]) {
+            switch (nn) {
                 case 0x07:
                     // VX = delay timer value
-                    V[code[0]&0xf] = dt;
+                    Vx = dt;
                     break;
                 case 0x0a:
                     // Wait for keypress, store value of key in VX
                     waitForKey = true;
-                    key_store = code[0]&0xf;
+                    key_store = x;
                     break;
                 case 0x15:
                     // Delay timer value = VX
-                    dt = V[code[0]&0xf];
+                    dt = Vx;
                     break;
                 case 0x18:
                     // Set sound timer = VX
-                    st = V[code[0]&0xf];
+                    st = Vx;
                     break;
                 case 0x1e:
                     // I += VX
-                    I += V[code[0]&0xf];
+                    I += Vx;
                     break;
                 case 0x29:
                     // I = location of sprite for digit VX
                     // Hex sprites are 8x5 bits
                     // They start at 0x00, so index them
-                    I = V[code[0]&0xf]*5;
+                    I = Vx*5;
                     break;
                 case 0x33:
                     // Store BCD representation of VX in memory location I, I+1, I+2
                     {
-                        int regcode = code[0]&0xf;
                         unsigned char ones, tens, hundreds;
-                        unsigned value = V[regcode];
+                        unsigned value = Vx;
                         ones = value % 10;
                         value /= 10;
                         tens = value % 10;
@@ -505,11 +512,11 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x55:
                     // Push all registers V[0..X] to location I
-                    pushRegisters(code[0]&0xf);
+                    pushRegisters(x);
                     break;
                 case 0x65:
                     // Reads from memory to registers V[0..X] starting from I
-                    popRegisters(code[0]&0xf);
+                    popRegisters(x);
                     break;
             }
             pc += 2;
