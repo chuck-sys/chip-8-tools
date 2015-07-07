@@ -89,6 +89,7 @@ int main(int argc, char **argv) {
             c8cpu->drawDisplay(window, bg, fg);
             window->display();
 
+            // Stay at 60 FPS
             while(c.getElapsedTime().asSeconds() < 1/60.) {}
             c.restart();
         }
@@ -97,8 +98,7 @@ int main(int argc, char **argv) {
         if (hasSound) {
             if (c8cpu->st > 0) {
                 // Only activate if sound is greater than 0
-                if (beep.getStatus() == Sound::Status::Paused ||
-                        beep.getStatus() == Sound::Status::Stopped) {
+                if (beep.getStatus() != Sound::Status::Playing) {
                     // Doesn't play if the sound is already playing
                     beep.play();
                 }
