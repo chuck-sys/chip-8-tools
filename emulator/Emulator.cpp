@@ -90,7 +90,9 @@ int main(int argc, char **argv) {
             window->display();
 
             // Stay at 60 FPS
-            while(c.getElapsedTime().asSeconds() < 1/60.) {}
+            float sleep_time = 1/60.-c.getElapsedTime().asSeconds();
+            if (sleep_time > 0)
+                sleep(seconds(sleep_time));
             c.restart();
         }
 
