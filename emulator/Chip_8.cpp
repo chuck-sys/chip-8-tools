@@ -156,13 +156,13 @@ void Chip_8::loadHexSprites() {
     memory[0x04f] = 0x80;
 }
 
-void Chip_8::pushRegisters(unsigned char x) {
+inline void Chip_8::pushRegisters(unsigned char x) {
     for (unsigned char i=0; i<=x; i++) {
         memory[I+i] = V[i];
     }
 }
 
-void Chip_8::popRegisters(unsigned char x) {
+inline void Chip_8::popRegisters(unsigned char x) {
     for (unsigned char i=0; i<=x; i++) {
         V[i] = memory[I+i];
     }
@@ -193,7 +193,6 @@ bool Chip_8::loadGame(const char *filename) {
     // memory location 512 and above, so
     // load the file in there
     FILE *f = fopen(filename, "rb");
-
     if (f == NULL) {
         // Error: No file found
         return false;
