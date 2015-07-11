@@ -77,11 +77,6 @@ int main(int argc, char **argv) {
             cerr << "Error: " << c8cpu->error_txt << endl;
             window->close();
         }
-        // Output status text if there is any
-        if (!c8cpu->status_txt.empty()) {
-            cerr << c8cpu->status_txt << endl;
-            c8cpu->status_txt = "";
-        }
 
         // Drawing
         if (c8cpu->drawf) {

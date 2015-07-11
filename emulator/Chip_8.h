@@ -55,7 +55,6 @@ class Chip_8 {
         bool drawf;                 // Do we need to draw anything?
         bool error;
         string error_txt;
-        string status_txt;
 
         Chip_8();
 

@@ -520,6 +520,7 @@ void Chip_8::emulateStep() {
         default:
             // Skips the command
             pc += 2;
-            status_txt = "Unknown opcode";
+            error = true;
+            error_txt = "Unknown opcode";
     }
 }
