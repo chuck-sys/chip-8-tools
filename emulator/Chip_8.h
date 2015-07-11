@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 
 #include <string>
-#include <random>
 
 using namespace std;
 using namespace sf;
@@ -14,7 +13,6 @@ class Chip_8 {
         static const int Width = 64;
         static const int Height = 32;
         static const int Scale = 8;
-
 
         unsigned char *memory;          // 4K memory
         unsigned char *display;         // Chip 8 graphics (B&W) 64x32px
