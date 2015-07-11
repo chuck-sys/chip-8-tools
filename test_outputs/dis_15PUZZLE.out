@@ -23,7 +23,7 @@
 022c: SVNE	V[0], 00
 022e: JMP	0234
 0230: SETH	V[0]
-0232: DSP	V[2], V[3], 08
+0232: DSP	V[2], V[3], 05
 0234: ADD	V[1], 01
 0236: ADD	V[2], 05
 0238: MOV	V[4], 03
@@ -104,7 +104,7 @@
 02ce: MOVR	V[d], V[0]
 02d0: RET
 02d2: ADD	V[c], ff
-02d4: RNRM	V[d], f0
+02d4: RNRM	V[d], 0f
 02d6: RET
 02d8: ADD	V[d], 01
 02da: MOV	V[0], 0f
@@ -168,7 +168,7 @@
 034e: MOVR	V[d], V[0]
 0350: RET
 0352: ADD	V[c], ff
-0354: RNRM	V[d], f0
+0354: RNRM	V[d], 0f
 0356: RET
 0358: ADD	V[d], 01
 035a: MOV	V[0], 0f

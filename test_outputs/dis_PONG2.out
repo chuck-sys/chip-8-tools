@@ -3,8 +3,8 @@
 0204: MOV	V[c], 3f
 0206: MOV	V[d], 0c
 0208: SETI	02ea
-020a: DSP	V[a], V[b], 02
-020c: DSP	V[c], V[d], 04
+020a: DSP	V[a], V[b], 06
+020c: DSP	V[c], V[d], 06
 020e: MOV	V[e], 00
 0210: CALL	02d4
 0212: MOV	V[6], 03
@@ -14,14 +14,14 @@
 021a: SRD	V[0]
 021c: SVE	V[0], 00
 021e: JMP	021a
-0220: RNRM	V[7], 170
+0220: RNRM	V[7], 17
 0222: ADD	V[7], 08
 0224: MOV	V[9], ff
 0226: SETI	02f0
-0228: DSP	V[6], V[7], 08
+0228: DSP	V[6], V[7], 01
 022a: SETI	02ea
-022c: DSP	V[a], V[b], 02
-022e: DSP	V[c], V[d], 04
+022c: DSP	V[a], V[b], 06
+022e: DSP	V[c], V[d], 06
 0230: MOV	V[0], 01
 0232: SKNP	K[0]
 0234: ADD	V[b], fe
@@ -30,7 +30,7 @@
 023a: ADD	V[b], 02
 023c: MOV	V[0], 1f
 023e: ANR	V[b], V[0]
-0240: DSP	V[a], V[b], 02
+0240: DSP	V[a], V[b], 06
 0242: MOV	V[0], 0c
 0244: SKNP	K[0]
 0246: ADD	V[d], fe
@@ -39,9 +39,9 @@
 024c: ADD	V[d], 02
 024e: MOV	V[0], 1f
 0250: ANR	V[d], V[0]
-0252: DSP	V[c], V[d], 04
+0252: DSP	V[c], V[d], 06
 0254: SETI	02f0
-0256: DSP	V[6], V[7], 08
+0256: DSP	V[6], V[7], 01
 0258: ADC	V[6], V[8]
 025a: ADC	V[7], V[9]
 025c: MOV	V[0], 3f
@@ -56,7 +56,7 @@
 026e: MOV	V[9], ff
 0270: SVNE	V[7], 00
 0272: MOV	V[9], 01
-0274: DSP	V[6], V[7], 08
+0274: DSP	V[6], V[7], 01
 0276: JMP	022a
 0278: MOV	V[8], 02
 027a: MOV	V[3], 01
@@ -110,10 +110,10 @@
 02da: SETH	V[1]
 02dc: MOV	V[4], 14
 02de: MOV	V[5], 00
-02e0: DSP	V[4], V[5], 0a
+02e0: DSP	V[4], V[5], 05
 02e2: ADD	V[4], 15
 02e4: SETH	V[2]
-02e6: DSP	V[4], V[5], 0a
+02e6: DSP	V[4], V[5], 05
 02e8: RET
 02ea: MOVR	V[0], V[8]
 02ec: MOVR	V[0], V[8]
@@ -124,7 +124,7 @@
 02f6: MOV	V[b], 20
 02f8: MOV	V[c], 00
 02fa: SETI	02ea
-02fc: DSP	V[b], V[c], 0d
+02fc: DSP	V[b], V[c], 01
 02fe: ADD	V[c], 01
 0300: SVE	V[c], 20
 0302: JMP	02fc
