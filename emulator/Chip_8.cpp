@@ -213,7 +213,7 @@ bool Chip_8::loadGame(const char *filename) {
     return true;
 }
 
-void Chip_8::updateTimers() {
+inline void Chip_8::updateTimers() {
     if (dt > 0)
         dt--;
     if (st > 0)
@@ -325,9 +325,6 @@ void Chip_8::emulateStep() {
     unsigned y = code[1] >> 4;
     // Register aliases
     unsigned char &Vx = V[x], &Vy = V[y], &VF = V[0xf];
-
-    // Debug
-    //printf("%04x: %x%x\n", pc, code[0], code[1]);
 
     switch (hinib) {
         case 0x0:
