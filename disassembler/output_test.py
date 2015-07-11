@@ -13,8 +13,6 @@ if len(sys.argv) < 3:
 EXE_STRING = sys.argv[1]
 FILE_NAME = sys.argv[2]
 
-print EXE_STRING
-
 # Run the command
 output = subprocess.check_output(EXE_STRING.split(' '))
 
