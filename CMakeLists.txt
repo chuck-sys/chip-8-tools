@@ -7,6 +7,8 @@ set (Chip8_Tools_VERSION_MAJOR 0)
 set (Chip8_Tools_VERSION_MINOR 0)
 set (Chip8_Tools_VERSION_PATCH 0)
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Os")
 
 add_subdirectory ("${PROJECT_SOURCE_DIR}/emulator")
