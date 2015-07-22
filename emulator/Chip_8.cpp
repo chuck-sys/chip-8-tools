@@ -336,6 +336,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0xee:
                     // 00EE: Returns from subroutine
+                    // Tested: Good
                     if (--sp < 0) {
                         error = true;
                         error_txt = "Error: No subroutine to return from\n";
@@ -348,20 +349,24 @@ void Chip_8::emulateStep() {
             break;
         case 0x1:
             // Jumps to address
+            // Tested: Good
             pc = nnn;
             break;
         case 0x2:
             // Calls subroutine at address
+            // Tested: Good
             stack[sp++] = pc;
             stack[sp] = nnn;
             pc = stack[sp];
             break;
         case 0x3:
             // Skips next instruction if VX == NN
+            // Tested: Good
             pc += 2 + (Vx == nn? 2: 0);
             break;
         case 0x4:
             // Skips next instruction if VX != NN
+            // Tested: Good
             pc += 2 + (Vx != nn? 2: 0);
             break;
         case 0x5:
@@ -370,11 +375,13 @@ void Chip_8::emulateStep() {
             break;
         case 0x6:
             // Set VX to NN
+            // Tested: Good
             Vx = nn;
             pc += 2;
             break;
         case 0x7:
             // Adds NN to VX
+            // Tested: Good
             Vx += nn;
             pc += 2;
             break;
@@ -382,6 +389,7 @@ void Chip_8::emulateStep() {
             switch (n) {
                 case 0x0:
                     // VX = VY
+                    // Tested: Good
                     Vx = Vy;
                     break;
                 case 0x1:
@@ -390,6 +398,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x2:
                     // VX &= VY
+                    // Tested: Good
                     Vx &= Vy;
                     break;
                 case 0x3:
@@ -399,6 +408,7 @@ void Chip_8::emulateStep() {
                 case 0x4:
                     {
                         // VX += VY, set VF = carry
+                        // Tested: Good
                         unsigned int add = Vx + Vy;
                         Vx = (unsigned short) add&0xffff;
                         VF = (unsigned short) add >> 16;
@@ -406,6 +416,7 @@ void Chip_8::emulateStep() {
                     }
                 case 0x5:
                     // VX -= VY, set VF = 0 if borrow, 1 if no borrow
+                    // Tested: Good
                     VF = Vx >= Vy? 1: 0;
                     Vx -= Vy;
                     break;
@@ -433,6 +444,7 @@ void Chip_8::emulateStep() {
             break;
         case 0xa:
             // Sets index register I to NNN
+            // Tested: Good
             I = nnn;
             pc += 2;
             break;
@@ -442,12 +454,14 @@ void Chip_8::emulateStep() {
             break;
         case 0xc:
             // Sets VX to random number masked by NN
+            // Tested: Good
             Vx = rand() & nn;
             pc += 2;
             break;
         case 0xd:
             // Reads N bytes from memory, displays them at coords (VX, VY),
             // VF = XORed collision pixels (1 if collide, 0 if no collide
+            // Tested: Good
             VF = (unsigned short) displaySprite(Vx, Vy, n);
             pc += 2;
             drawf = true;
@@ -460,6 +474,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0xa1:
                     // Skip next instruction if key[VX] is not pressed
+                    // Tested: Good
                     pc += 2 + (!keys[Vx]? 2: 0);
                     break;
             }
@@ -468,6 +483,7 @@ void Chip_8::emulateStep() {
             switch (nn) {
                 case 0x07:
                     // VX = delay timer value
+                    // Tested: Good
                     Vx = dt;
                     break;
                 case 0x0a:
@@ -477,10 +493,12 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x15:
                     // Delay timer value = VX
+                    // Tested: Good
                     dt = Vx;
                     break;
                 case 0x18:
                     // Set sound timer = VX
+                    // Tested: Good
                     st = Vx;
                     break;
                 case 0x1e:
@@ -491,10 +509,12 @@ void Chip_8::emulateStep() {
                     // I = location of sprite for digit VX
                     // Hex sprites are 8x5 bits
                     // They start at 0x00, so index them
+                    // Tested: Good
                     I = Vx*5;
                     break;
                 case 0x33:
                     // Store BCD representation of VX in memory location I, I+1, I+2
+                    // Tested: Good
                     {
                         unsigned char ones, tens, hundreds;
                         unsigned value = Vx;
@@ -513,6 +533,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x65:
                     // Reads from memory to registers V[0..X] starting from I
+                    // Tested: Good
                     popRegisters(x);
                     break;
             }
