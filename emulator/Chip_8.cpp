@@ -460,7 +460,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0xa1:
                     // Skip next instruction if key[VX] is not pressed
-                    pc += 2 + (keys[Vx]? 0: 2);
+                    pc += 2 + (!keys[Vx]? 2: 0);
                     break;
             }
             break;
