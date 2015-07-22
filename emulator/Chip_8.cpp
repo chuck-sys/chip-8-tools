@@ -332,6 +332,7 @@ void Chip_8::emulateStep() {
             switch (nn) {
                 case 0xe0:
                     // 00E0: Clears the screen
+                    // Tested: Good
                     clearScreen();
                     break;
                 case 0xee:
@@ -371,6 +372,7 @@ void Chip_8::emulateStep() {
             break;
         case 0x5:
             // Skips next instruction if VX == VY
+            // Tested: Good
             pc += 2 + (Vx == Vy? 2: 0);
             break;
         case 0x6:
@@ -394,6 +396,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x1:
                     // VX |= VY
+                    // Tested: Good
                     Vx |= Vy;
                     break;
                 case 0x2:
@@ -403,6 +406,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x3:
                     // VX xor= VY
+                    // Tested: Good
                     Vx ^= Vy;
                     break;
                 case 0x4:
@@ -422,6 +426,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x6:
                     // Set VF = least significant bit VX, VX >>= 1
+                    // Tested: Good
                     VF = Vx&0x1;
                     Vx >>= 1;
                     break;
@@ -432,6 +437,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0xe:
                     // Set VF = most significant bit VX, VX <<= 1
+                    // Tested: Good
                     VF = Vx>>7;
                     Vx <<= 1;
                     break;
@@ -440,6 +446,7 @@ void Chip_8::emulateStep() {
             break;
         case 0x9:
             // Skips next instruction if VX != VY
+            // Tested: Good
             pc += 2 + (Vx != Vy? 2: 0);
             break;
         case 0xa:
@@ -450,6 +457,7 @@ void Chip_8::emulateStep() {
             break;
         case 0xb:
             // Jumps to address NNN+V0
+            // Tested: Good
             pc = nnn+V[0];
             break;
         case 0xc:
@@ -470,6 +478,7 @@ void Chip_8::emulateStep() {
             switch (nn) {
                 case 0x9e:
                     // Skip next instruction if key[VX] is pressed
+                    // Tested: Good
                     pc += 2 + (keys[Vx]? 2: 0);
                     break;
                 case 0xa1:
@@ -503,6 +512,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x1e:
                     // I += VX
+                    // Tested: Good
                     I += Vx;
                     break;
                 case 0x29:
@@ -529,6 +539,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x55:
                     // Push all registers V[0..X] to location I
+                    // Tested: Good
                     pushRegisters(x);
                     break;
                 case 0x65:

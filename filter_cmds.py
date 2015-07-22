@@ -11,7 +11,7 @@ for l in sys.stdin:
     if mnemonic.isalpha():
         s.append(mnemonic)
 
-s = set(s)
+s = sorted(set(s))
 for i in s:
     print i
 
