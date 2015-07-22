@@ -400,8 +400,8 @@ void Chip_8::emulateStep() {
                     {
                         // VX += VY, set VF = carry
                         unsigned int add = Vx + Vy;
-                        Vx = (unsigned short) add&0x00ff;
-                        VF = (unsigned short) add >> 8;
+                        Vx = (unsigned short) add&0xffff;
+                        VF = (unsigned short) add >> 16;
                         break;
                     }
                 case 0x5:
