@@ -175,6 +175,7 @@ void Chip_8::clearScreen() {
 }
 
 bool Chip_8::displaySprite(unsigned char x, unsigned char y, unsigned char n_bytes) {
+    V[0xF] = 0;
     for (int by = 0; by < n_bytes; by++) {
         unsigned char sprite = memory[I + by];
         for (int bx = 0; bx < 8; bx++) {
