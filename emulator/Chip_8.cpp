@@ -6,6 +6,8 @@
 #include "Chip_8.h"
 
 Chip_8::Chip_8() {
+    // Key lookups
+    initKeyLookups();
     // The memory 4K
     memory = new unsigned char[4096];
     for (int i=0; i<4096; i++) {
@@ -40,6 +42,25 @@ Chip_8::Chip_8() {
     drawf = true;
     error = false;
     error_txt = "";
+}
+
+void Chip_8::initKeyLookups() {
+    key_lookup[Keyboard::Num1]  = 0x1;
+    key_lookup[Keyboard::Num2]  = 0x2;
+    key_lookup[Keyboard::Num3]  = 0x3;
+    key_lookup[Keyboard::Num4]  = 0xc;
+    key_lookup[Keyboard::Q]     = 0x4;
+    key_lookup[Keyboard::W]     = 0x5;
+    key_lookup[Keyboard::E]     = 0x6;
+    key_lookup[Keyboard::R]     = 0xd;
+    key_lookup[Keyboard::A]     = 0x7;
+    key_lookup[Keyboard::S]     = 0x8;
+    key_lookup[Keyboard::D]     = 0x9;
+    key_lookup[Keyboard::F]     = 0xe;
+    key_lookup[Keyboard::Z]     = 0xa;
+    key_lookup[Keyboard::X]     = 0x0;
+    key_lookup[Keyboard::C]     = 0xb;
+    key_lookup[Keyboard::V]     = 0xf;
 }
 
 void Chip_8::loadHexSprites() {
@@ -233,64 +254,15 @@ void Chip_8::initialize(const char *filename) {
 }
 
 void Chip_8::handleKey(const Keyboard::Key key, bool pressed) {
-    switch (key) {
-        case Keyboard::Num1:
-            keys[1] = pressed;
-            break;
-        case Keyboard::Num2:
-            keys[2] = pressed;
-            break;
-        case Keyboard::Num3:
-            keys[3] = pressed;
-            break;
-        case Keyboard::Num4:
-            keys[0xc] = pressed;
-            break;
-        case Keyboard::Q:
-            keys[4] = pressed;
-            break;
-        case Keyboard::W:
-            keys[5] = pressed;
-            break;
-        case Keyboard::E:
-            keys[6] = pressed;
-            break;
-        case Keyboard::R:
-            keys[0xd] = pressed;
-            break;
-        case Keyboard::A:
-            keys[7] = pressed;
-            break;
-        case Keyboard::S:
-            keys[8] = pressed;
-            break;
-        case Keyboard::D:
-            keys[9] = pressed;
-            break;
-        case Keyboard::F:
-            keys[0xe] = pressed;
-            break;
-        case Keyboard::Z:
-            keys[0xa] = pressed;
-            break;
-        case Keyboard::X:
-            keys[0] = pressed;
-            break;
-        case Keyboard::C:
-            keys[0xb] = pressed;
-            break;
-        case Keyboard::V:
-            keys[0xf] = pressed;
-            break;
-        default:
-            break;
-    }
+    try {
+        keys[key_lookup.at(key)] = pressed;
 
-    if (pressed && waitForKey) {
-        waitForKey = false;
-        keys[key_store] = true;
-        pc += 2;
-    }
+        if (pressed && waitForKey) {
+            waitForKey = false;
+            V[key_store] = key_lookup.at(key);
+            pc += 2;
+        }
+    } catch (std::out_of_range &e) {}
 }
 
 void Chip_8::drawDisplay(RenderWindow *w, Color bg, Color fg) {

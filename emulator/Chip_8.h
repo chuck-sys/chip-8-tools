@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 using namespace sf;
@@ -42,6 +43,7 @@ class Chip_8 {
         bool displaySprite(unsigned char x, unsigned char y, unsigned char n_bytes);
 
         void updateTimers();
+        void initKeyLookups();
 
         /* Pushes/Pops back all registers from/to V[0..x] starting
          * from memory position I
@@ -63,5 +65,7 @@ class Chip_8 {
         void emulateStep();
         void drawDisplay(RenderWindow *w, Color bg, Color fg);
 };
+
+static unordered_map<int, int> key_lookup = unordered_map<int, int>();
 
 #endif
