@@ -386,7 +386,7 @@ void Chip_8::emulateStep() {
                         // VX += VY, set VF = carry
                         // Tested: Good
                         unsigned int add = Vx + Vy;
-                        Vx = (unsigned short) add&0xffff;
+                        Vx = (unsigned short) add;
                         VF = (unsigned short) add >> 16;
                         break;
                     }
