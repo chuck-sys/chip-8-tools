@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <stdexcept>
 
 #include "Chip_8.h"
 
