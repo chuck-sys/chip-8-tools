@@ -404,7 +404,7 @@ void Chip_8::emulateStep() {
                     break;
                 case 0x7:
                     // VX = VY - VX, set VF = 0 if borrow, 1 if no borrow
-                    VF = Vx <= Vy? 1: 0;
+                    VF = Vx < Vy? 1: 0;
                     Vx = Vy - Vx;
                     break;
                 case 0xe:
