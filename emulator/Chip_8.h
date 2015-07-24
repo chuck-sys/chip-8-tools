@@ -36,11 +36,11 @@ class Chip_8 {
         void clearScreen();
 
         /* Displays n byte sprite at (x, y) from memory location I
-         * Returns any collisions
+         * Sets V[f] by itself (self contained)
          *
          * NOTE: bits are XORed to the screen
          */
-        bool displaySprite(unsigned char x, unsigned char y, unsigned char n_bytes);
+        void displaySprite(unsigned char x, unsigned char y, unsigned char n_bytes);
 
         void updateTimers();
         void initKeyLookups();

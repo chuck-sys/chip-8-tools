@@ -196,7 +196,7 @@ void Chip_8::clearScreen() {
     drawf = true;
 }
 
-bool Chip_8::displaySprite(unsigned char x, unsigned char y, unsigned char n_bytes) {
+void Chip_8::displaySprite(unsigned char x, unsigned char y, unsigned char n_bytes) {
     V[0xF] = 0;
     for (int by = 0; by < n_bytes; by++) {
         unsigned char sprite = memory[I + by];
@@ -388,13 +388,13 @@ void Chip_8::emulateStep() {
                         // Tested: Good
                         unsigned int add = Vx + Vy;
                         Vx = (unsigned short) add;
-                        VF = (unsigned short) add >> 16;
+                        VF = (unsigned short) (add >> 16);
                         break;
                     }
                 case 0x5:
                     // VX -= VY, set VF = 0 if borrow, 1 if no borrow
                     // Tested: Good
-                    VF = Vx >= Vy? 1: 0;
+                    VF = Vx > Vy? 1: 0;
                     Vx -= Vy;
                     break;
                 case 0x6:
@@ -443,7 +443,7 @@ void Chip_8::emulateStep() {
             // Reads N bytes from memory, displays them at coords (VX, VY),
             // VF = XORed collision pixels (1 if collide, 0 if no collide
             // Tested: Good
-            VF = (unsigned short) displaySprite(Vx, Vy, n);
+            displaySprite(Vx, Vy, n);
             pc += 2;
             drawf = true;
             break;
