@@ -7,9 +7,14 @@ This is a set of tools for emulating and looking at chip-8 files. It can
 currently emulate the following without major problems:
 - 15PUZZLE
 - BLINKY
+- BRIX
+- INVADERS
+- MAZE
+- MISSILE (?)
 - PONG
 - PONG2
-- MAZE
+- TANK (?)
+- TETRIS
 
 The others may sometimes randomly seg. fault, or may do something unexpected,
 but I'm working on that.
