@@ -38,7 +38,7 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned sh
             break;
         case 0x1:
             // Jumps to address
-            printf("JMP\t%04x", nnn);
+            printf("JP\t%04x", nnn);
             break;
         case 0x2:
             // Calls subroutine at address
@@ -46,75 +46,75 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned sh
             break;
         case 0x3:
             // Skips next instruction if VX == NN
-            // SVE
-            printf("SVE\tV[%x], %02x", x, nn);
+            // SE
+            printf("SE\tV%x, %02x", x, nn);
             break;
         case 0x4:
             // Skips next instruction if VX != NN
-            // SVNE
-            printf("SVNE\tV[%x], %02x", x, nn);
+            // SNE
+            printf("SNE\tV%x, %02x", x, nn);
             break;
         case 0x5:
             // Skips next instruction if VX == VY
-            // SVVE
-            printf("SVVE\tV[%x], V[%x]", x, y);
+            // SE
+            printf("SE\tV%x, V%x", x, y);
             break;
         case 0x6:
             // Set VX to NN
-            // MOV
-            printf("MOV\tV[%x], %02x", x, nn);
+            // LD
+            printf("LD\tV%x, %02x", x, nn);
             break;
         case 0x7:
             // Adds NN to VX
             // ADD
-            printf("ADD\tV[%x], %02x", x, nn);
+            printf("ADD\tV%x, %02x", x, nn);
             break;
         case 0x8:
             switch (code[1]&0xf) {
                 case 0x0:
                     // VX = VY
-                    // MOVR
-                    printf("MOVR\tV[%x], V[%x]", x, y);
+                    // LD
+                    printf("LD\tV%x, V%x", x, y);
                     break;
                 case 0x1:
                     // VX |= VY
-                    // ORR
-                    printf("ORR\tV[%x], V[%x]", x, y);
+                    // OR
+                    printf("OR\tV%x, V%x", x, y);
                     break;
                 case 0x2:
                     // VX &= VY
-                    // ANR
-                    printf("ANR\tV[%x], V[%x]", x, y);
+                    // AND
+                    printf("AND\tV%x, V%x", x, y);
                     break;
                 case 0x3:
                     // VX ^= VY
-                    // XORR
-                    printf("XORR\tV[%x], V[%x]", x, y);
+                    // XOR
+                    printf("XOR\tV%x, V%x", x, y);
                     break;
                 case 0x4:
                     // VX += VY, set VF = carry
-                    // ADC
-                    printf("ADC\tV[%x], V[%x]", x, y);
+                    // ADD
+                    printf("ADD\tV%x, V%x", x, y);
                     break;
                 case 0x5:
                     // VX -= VY, set VF = 0 if borrow, 1 if no borrow
-                    // SBB
-                    printf("SBB\tV[%x], V[%x]", x, y);
+                    // SUB
+                    printf("SUB\tV%x, V%x", x, y);
                     break;
                 case 0x6:
                     // Set VF = least significant bit VX, VX >>= 1
-                    // SRS (Shift Right Save (bit))
-                    printf("SRS\tV[%x]", x);
+                    // SHR
+                    printf("SHR\tV%x", x);
                     break;
                 case 0x7:
                     // VX = VY - VX, set VF = 0 if borrow, 1 if no borrow
-                    // SRB (Sub Reverse Borrow)
-                    printf("SRB\tV[%x], V[%x]", x, y);
+                    // SUBN
+                    printf("SUBN\tV%x, V%x", x, y);
                     break;
                 case 0xe:
                     // Set VF = most significant bit VX, VX <<= 1
-                    // SLS (Shift Left Save (bit))
-                    printf("SLS\tV[%x]", x);
+                    // SHL
+                    printf("SHL\tV%x", x);
                     break;
                 default:
                     // If it is a piece of data, insert directly into output
@@ -124,41 +124,41 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned sh
             break;
         case 0x9:
             // Skips next instruction if VX != VY
-            // SVVNE
-            printf("SVVNE\tV[%x], V[%x]", x, y);
+            // SNE
+            printf("SNE\tV%x, V%x", x, y);
             break;
         case 0xa:
             // Sets index register I to NNN
-            // SETI
-            printf("SETI\t%04x", nnn);
+            // LD
+            printf("LD\tI, %04x", nnn);
             break;
         case 0xb:
             // Jumps to address NNN+V0
-            // JAR (Jump Add Register V[0]
-            printf("JAR\t%04x", nnn);
+            // JP
+            printf("JP\tV0, %04x", nnn);
             break;
         case 0xc:
             // Sets VX to random number masked by NN
-            // RNRM (RaNdom Register with Mask)
-            printf("RNRM\tV[%x], %02x", x, nn);
+            // RND
+            printf("RND\tV%x, %02x", x, nn);
             break;
         case 0xd:
             // Reads N bytes from memory, displays them at coords (VX, VY),
             // VF = XORed collision pixels (1 if collide, 0 if no collide)
-            // DSP (Display SPrite)
-            printf("DSP\tV[%x], V[%x], %02x", x, y, n);
+            // DRW
+            printf("DRW\tV%x, V%x, %02x", x, y, n);
             break;
         case 0xe:
             switch (code[1]) {
                 case 0x9e:
                     // Skip next instruction if key[VX] is pressed
                     // SKP (Skip if Key Pressed)
-                    printf("SKP\tK[%x]", x);
+                    printf("SKP\tV%x", x);
                     break;
                 case 0xa1:
                     // Skip next instruction if key[VX] is not pressed
                     // SKNP
-                    printf("SKNP\tK[%x]", x);
+                    printf("SKNP\tV%x", x);
                     break;
                 default:
                     // If it is a piece of data, insert directly into output
@@ -170,48 +170,48 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned sh
             switch (nn) {
                 case 0x07:
                     // VX = delay timer value
-                    // SRD (Set Register to Delay timer)
-                    printf("SRD\tV[%x]", x);
+                    // LD (Set Register to Delay timer)
+                    printf("LD\tV%x, DT", x);
                     break;
                 case 0x0a:
                     // Wait for keypress, store value of key in VX
-                    // WKP (Wait for Key Press)
-                    printf("WKP\tV[%x]", x);
+                    // LD (Wait for Key Press)
+                    printf("LD\tV%x, K", x);
                     break;
                 case 0x15:
                     // Delay timer value = VX
-                    // SDR (Set Delay timer to Register)
-                    printf("SDR\tV[%x]", x);
+                    // LD (Set Delay timer to Register)
+                    printf("LD\tDT, V%x", x);
                     break;
                 case 0x18:
                     // Set sound timer = VX
-                    // SSR (Set Sound timer to Register)
-                    printf("SSR\tV[%x]", x);
+                    // LD (Set Sound timer to Register)
+                    printf("LD\tST, V%x", x);
                     break;
                 case 0x1e:
                     // I += VX
-                    // AIR (Add I and Register)
-                    printf("AIR\tV[%x]", x);
+                    // ADD (Add I and Register)
+                    printf("ADD\tI, V%x", x);
                     break;
                 case 0x29:
                     // I = location of sprite for digit VX
-                    // SETH (SET Hex)
-                    printf("SETH\tV[%x]", x);
+                    // LDI (SET Hex)
+                    printf("LDI\tV%x", x);
                     break;
                 case 0x33:
                     // Store BCD representation of VX in memory location I, I+1, I+2
                     // BCD
-                    printf("BCD\tV[%x]", x);
+                    printf("BCD\tV%x", x);
                     break;
                 case 0x55:
                     // Push all registers V[0..X] to location I
-                    // PUSHA
-                    printf("PUSHA\tV[%x]", x);
+                    // PUSH
+                    printf("PUSH\tV%x", x);
                     break;
                 case 0x65:
                     // Reads from memory to registers V[0..X] starting from I
-                    // POPA
-                    printf("POPA\tV[%x]", x);
+                    // POP
+                    printf("POP\tV%x", x);
                     break;
                 default:
                     // If it is a piece of data, insert directly into output

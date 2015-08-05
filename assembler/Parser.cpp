@@ -9,6 +9,7 @@ Parser::Parser(string in_fn) {
 
     if (f == NULL) {
         // ERROR
+        return;
     }
 
     fseek(f, 0, SEEK_END);
@@ -18,7 +19,7 @@ Parser::Parser(string in_fn) {
     // Initialize buffer
     buffer = new char[file_size];
     for (int i=0; i<file_size; i++)
-        buffer = 0;
+        buffer[i] = 0;
 
     fread(buffer, 1, file_size, f);
 
@@ -31,16 +32,67 @@ Parser::Parser(string in_fn) {
 }
 
 Parser::token Parser::getNextToken() {
-    // Check for whitespace
+    // Skip any whitespace (not including a newline)
     while (buffer[pos] == ' ' || buffer[pos] == '\t')
         pos++;
 
+    if (buffer[pos] == 'V') {
+        // Check if it names a valid register
+        Parsed = "";
+        pos++;
+        if (isHexDigit(buffer[pos])) {
+            Parsed = buffer[pos];
+            pos++;
+            return reg_token;
+        }
+        else {
+            ErrorMesg = "Invalid register";
+            return error_state;
+        }
+    }
+    else if (buffer[pos] == ';') {
+        // Ignore any and all comments
+        while (buffer[pos] != '\n')
+            pos++;
+    }
+    else if (buffer[pos] == 'I') {
+        // It is the indexer!
+        pos++;
+        return ireg_token;
+    }
+    else if (buffer[pos] == 'K') {
+        // It's a key!
+        pos++;
+        return key_token;
+    }
+    else if (buffer[pos] == 'D') {
+        if (buffer[pos+1] == 'T') {
+            pos += 2;
+            return dt_token;
+        }
+    }
+    if (buffer[pos] == 'S') {
+        if (buffer[pos+1] == 'T') {
+            pos += 2;
+            return st_token;
+        }
+    }
+    if (isHexDigit(buffer[pos])) {
+        // Check if it is a hex number
+        Parsed = buffer[pos];
+        pos++;
+        while (isHexDigit(buffer[pos])) {
+            Parsed += buffer[pos];
+            pos++;
+        }
+        return hexnum_token;
+    }
     if (isalpha(buffer[pos])) {
         // Check for a mnemonic or a label
         Parsed = buffer[pos];
         pos++;
 
-        while (buffer[pos] != ':' && buffer[pos] != ' ' && buffer[pos] != '\n') {
+        while (buffer[pos] != ':' && buffer[pos] != ' ' && buffer[pos] != '\n' && buffer[pos] != '\t') {
             Parsed += buffer[pos];
             pos++;
         }
@@ -50,45 +102,9 @@ Parser::token Parser::getNextToken() {
             pos++;
             return label_token;
         }
-        else if (buffer[pos] == ' ') {
+        else {
             // It should be a mnemonic
             return mnemonic_token;
-        }
-    }
-    else if (buffer[pos] == 'v') {
-        // Check if it names a valid register
-        Parsed = "";
-        pos++;
-        if (isHexDigit(buffer[pos])) {
-            Parsed = buffer[pos];
-            pos++;
-            return reg_token;
-        }
-        pos++;
-    }
-    else if (buffer[pos] == '0') {
-        // Check if it is a hex number
-        Parsed = "";
-        pos++;
-        if (buffer[pos] == 'x' || buffer[pos] == 'X') {
-            pos++;
-            while (isHexDigit(buffer[pos])) {
-                Parsed += buffer[pos];
-                pos++;
-            }
-        }
-        else {
-            pos++;
-            ErrorMesg = "Expected 'x' after '0'";
-        }
-        pos++;
-
-        // If there is nothing behind 0x, error out
-        if (Parsed.length() >= 1) {
-            return hexnum_token;
-        }
-        else {
-            ErrorMesg = "Expected hexadecimal numbers after '0x'";
         }
     }
     else if (buffer[pos] == ',') {
@@ -99,11 +115,12 @@ Parser::token Parser::getNextToken() {
         pos++;
         return nl_token;
     }
-    else if (buffer[pos] == EOF) {
+    else if (pos >= file_size) {
         // End of file reached; abort
         // Don't increment counter
         return eof_token;
     }
 
+    ErrorMesg = to_string(buffer[pos]);
     return error_state;
 }

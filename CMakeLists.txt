@@ -1,6 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
 project (Chip8_Tools)
-enable_testing ()
 
 # Versioning
 set (Chip8_Tools_VERSION_MAJOR 0)
@@ -13,5 +12,6 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Os")
 
 add_subdirectory ("${PROJECT_SOURCE_DIR}/emulator")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/disassembler")
+add_subdirectory ("${PROJECT_SOURCE_DIR}/assembler")
 
 include_directories ("${PROJECT_BINARY_DIR}")

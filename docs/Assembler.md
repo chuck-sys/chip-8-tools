@@ -9,61 +9,57 @@ Mnemonic | Opcode | Usage | Description
 ---------|--------|-------|------------
 CLS | 00E0 | `CLS` | Clears the entire screen; Sets the draw flag
 RET | 00EE | `RET` | Returns from subroutine
-JMP | 1nnn | `JMP 0x222` | Jumps to address nnn
-CALL | 2nnn | `CALL 0x232` | Calls the subroutine at address nnn
-SVE | 3xnn | `SVE v0, 0xa0` | Skips the next instruction if V[x] == nn
-SVNE | 4xnn | `SVNE v0, 0xa0` | Skips the next instruction if V[x] == nn
-SVVE | 5xy0 | `SVVE v0, va` | Skips the next instruction if V[x] == V[y]
-MOV | 6xnn | `MOV v0, 0x2a` | Sets the value of V[x] to nn
-ADD | 7xnn | `ADD v0, 0x12` | Adds nn to the value of V[x] and stores it in V[x]
-MOVR | 8xy0 | `MOVR v0, v1` | Sets the value of V[x] to the value of V[y]
-ORR | 8xy1 | `ORR v0, v1` | Sets the value of V[x] to V[x] _OR_ V[y]
-ANR | 8xy2 | `ANR v0, v1` | Sets the value of V[x] to V[x] _AND_ V[y]
-XORR | 8xy3 | `XORR v0, v1` | Sets the value of V[x] to V[x] _XOR_ V[y]
-ADC | 8xy4 | `ADC v0, v1` | Sets V[x] to V[x] + V[y]; Set V[0xf] = 1 if there is carry and vice versa
-SBB | 8xy5 | `SBB v0, v1` | Sets V[x] to V[x] - V[y]; Set V[f] = 0 if there is borrow and vice versa
-SRS | 8x06 | `SRS v0` | Saves LSB of V[x] in V[0xf]; Shifts V[x] to the right by 1 bit
-SRB | 8xy7 | `SRB v0, v1` | Sets V[x] to V[y] - V[x]; Set V[f] = 0 if there is borrow and vice versa
-SLS | 8x0e | `SLS v0` | Saves MSB of V[x] in V[0xf]; Shifts V[x] to the left by 1 bit
-SVVNE | 9xy0 | `SVVNE v0, v1` | Skips the next instruction if V[x] != V[y]
-SETI | Annn | `SETI 0x29a` | Sets index register I to nnn
-JAR | Bnnn | `JAR 0x29b` | Jumps to address nnn+V[0]
-RNRM | Cxnn | `RNRM v0, 0x01` | Sets V[x] to a random number masked by nn
-DSP | Dxyn | `DSP v0, v1, 0x2` | Reads n bytes from memory, and displays them at (V[x], V[y]); Sets V[0xf] to whether any pixel collided (collided? 1:0)
-SKP | Ex9E | `SKP v0` | Skips the next instruction if key[V[x]] is pressed
-SKNP | ExA1 | `SKNP v0` | Skips the next instruction if key[V[x]] is _NOT_ pressed
-SRD | Fx07 | `SRD v0` | Sets V[x] to the value in delay timer DT
-WKP | Fx0A | `WKP v0` | Waits for a key press, then stores the value of pressed key in V[x]
-SDR | Fx15 | `SDR v0` | Sets DT to the value in V[x]
-SSR | Fx18 | `SSR v0` | Sets ST sound timer to the value in V[x]
-SETH | Fx29 | `SETH v0` | Sets index register I to the location of the sprite for digit V[x]
-BCD | Fx33 | `BCD v0` | Stores BCD representation of V[x] in memory location I, I+1, I+2 (hundreds, tens, ones)
-PUSHA | Fx55 | `PUSHA vf` | Pushes all registers from V[0] to V[x] inclusive to location I, I+1, ...
-POPA | Fx65 | `POPA vf` | Pops all registers from V[0] to V[x] inclusive from location I, I+1, ...
-
-
-### Extra Commands
-
-Mnemonic | Opcode | Usage | Description
----------|--------|-------|------------
-DATA | _NONE_ | `DATA 0x0001, 0x0009, 0x9a83, ...` | Inserts raw data (the arguments) into the resulting binary
+JP | 1nnn | `JP 222` | Jumps to address nnn
+CALL | 2nnn | `CALL 232` | Calls the subroutine at address nnn
+SE | 3xnn | `SE V0, a0` | Skips the next instruction if V[x] == nn
+SNE | 4xnn | `SNE V0, a0` | Skips the next instruction if V[x] == nn
+SE | 5xy0 | `SE V0, Va` | Skips the next instruction if V[x] == V[y]
+LD | 6xnn | `LD V0, 2a` | Sets the value of V[x] to nn
+ADD | 7xnn | `ADD V0, 12` | Adds nn to the value of V[x] and stores it in V[x]
+LD | 8xy0 | `LD V0, V1` | Sets the value of V[x] to the value of V[y]
+OR | 8xy1 | `OR V0, V1` | Sets the value of V[x] to V[x] _OR_ V[y]
+AND | 8xy2 | `AND V0, V1` | Sets the value of V[x] to V[x] _AND_ V[y]
+XOR | 8xy3 | `XOR V0, V1` | Sets the value of V[x] to V[x] _XOR_ V[y]
+ADD | 8xy4 | `ADD V0, V1` | Sets V[x] to V[x] + V[y]; Set V[0xf] = 1 if there is carry and vice versa
+SUB | 8xy5 | `SUB V0, V1` | Sets V[x] to V[x] - V[y]; Set V[f] = 0 if there is borrow and vice versa
+SHR | 8x06 | `SHR V0` | Saves LSB of V[x] in V[0xf]; Shifts V[x] to the right by 1 bit
+SUBN | 8xy7 | `SUBN V0, V1` | Sets V[x] to V[y] - V[x]; Set V[f] = 0 if there is borrow and vice versa
+SHL | 8x0e | `SHL V0` | Saves MSB of V[x] in V[0xf]; Shifts V[x] to the left by 1 bit
+SNE | 9xy0 | `SNE V0, V1` | Skips the next instruction if V[x] != V[y]
+LD | Annn | `LD I, 29a` | Sets index register I to nnn
+JP | Bnnn | `JP V0, 29b` | Jumps to address nnn+V[0]
+RND | Cxnn | `RND V0, 1` | Sets V[x] to a random number masked by nn
+DRW | Dxyn | `DRW V0, V1, 2` | Reads n bytes from memory, and displays them at (V[x], V[y]); Sets V[0xf] to whether any pixel collided (collided? 1:0)
+SKP | Ex9E | `SKP V0` | Skips the next instruction if key[V[x]] is pressed
+SKNP | ExA1 | `SKNP V0` | Skips the next instruction if key[V[x]] is _NOT_ pressed
+LD | Fx07 | `LD V0, DT` | Sets V[x] to the value in delay timer DT
+LD | Fx0A | `LD V0, K` | Waits for a key press, then stores the value of pressed key in V[x]
+LD | Fx15 | `LD DT, V0` | Sets DT to the value in V[x]
+LD | Fx18 | `LD ST, V0` | Sets ST sound timer to the value in V[x]
+ADD | Fx1E | `ADD I, V0` | Sets I to I + V[x]
+LDI | Fx29 | `LDI V0` | Sets index register I to the location of the sprite for digit V[x]
+BCD | Fx33 | `BCD V0` | Stores BCD representation of V[x] in memory location I, I+1, I+2 (hundreds, tens, ones)
+PUSH | Fx55 | `PUSH Vf` | Pushes all registers from V[0] to V[x] inclusive to location I, I+1, ...
+POP | Fx65 | `POP Vf` | Pops all registers from V[0] to V[x] inclusive from location I, I+1, ...
 
 
 ### Syntax
 
 ```
 ; Infinite loop
-JMP 0x200
+JP 200
 ```
 
 Comments are one-liners starting with `;` character.
 
 ```
-SETI sprite1
-DSP v0, v1, 0x2
+LD I, sprite1
+DRW V0, V1, 2
 
 sprite1:
-data 0x000f
+; To insert data, just have the number there;
+; automatic insertion will take place
+000f
 ```
 
 For convenience's sake, all addresses can be labeled.

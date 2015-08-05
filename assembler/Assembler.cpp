@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
             if (++i<argc)
                 binary_fn = string(argv[i]);
             else {
-                cerr << "Error: Must have a filename after '-o'\n";
+                cerr << "Error: Must have a filename after `-o'\n";
                 return -1;
             }
             continue;
@@ -46,6 +46,12 @@ int main(int argc, char **argv) {
     // Start parsing and generating the code
     Parser *parser = new Parser(source_fn);
     Generator *generator = new Generator(parser);
+
+    generator->run();
+    if (!generator->error)
+        generator->output(binary_fn);
+    else
+        cerr << "Cannot generate binary - some errors exist.\n";
 
     return 0;
 }

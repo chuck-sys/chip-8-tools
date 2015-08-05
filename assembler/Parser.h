@@ -12,6 +12,7 @@ class Parser {
 private:
     char *buffer;
     int pos;
+    int file_size;
 
 public:
     enum token {
@@ -19,6 +20,10 @@ public:
         eof_token,
         label_token,
         reg_token,
+        ireg_token,
+        dt_token,
+        st_token,
+        key_token,
         hexnum_token,
         comma_token,
         mnemonic_token,
