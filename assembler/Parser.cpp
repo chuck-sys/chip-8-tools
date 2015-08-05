@@ -9,6 +9,7 @@ Parser::Parser(string in_fn) {
 
     if (f == NULL) {
         // ERROR
+        ErrorMesg = "Fatal Error: File does not exist!!!";
         return;
     }
 

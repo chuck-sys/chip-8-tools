@@ -30,6 +30,12 @@ int main(int argc, char **argv) {
         }
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             // Gives some help
+            cout << "Chip 8 Assembler by Cheuk Yin Ng" << endl
+                << "Report all bugs to <https://github.com/cheukyin699/chip-8-tools/>."
+                << "Usage:\n"
+                << argv[0] << " [options] <source>" << endl << endl
+                << "Options:\n"
+                << "  -o <file>             Place the output into <file>\n";
             return 0;
         }
 
@@ -45,6 +51,13 @@ int main(int argc, char **argv) {
 
     // Start parsing and generating the code
     Parser *parser = new Parser(source_fn);
+
+    // Error checking before the storm
+    if (parser->ErrorMesg != "") {
+        cerr << "[Parser] " << parser->ErrorMesg << endl;
+        return 0;
+    }
+
     Generator *generator = new Generator(parser);
 
     generator->run();
