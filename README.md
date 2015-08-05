@@ -19,7 +19,11 @@ currently emulate the following without major problems:
 The others may sometimes randomly seg. fault, or may do something unexpected,
 but I'm working on that.
 
-The assembler works on all chip-8 files. However, it may sometimes misrepresent
+The disassembler works on all chip-8 files. However, it may sometimes misrepresent
 data as opcodes, which are also the same as the data once converted.
+
+The assembler works with the disassembler. Combining the 2 functions will result
+in the same thing as the identity function, of course, with some space
+limitations.
 
 [1]: https://travis-ci.org/cheukyin699/chip-8-tools.svg?branch=master
