@@ -1,6 +1,7 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
+#include <fstream>
 #include <string>
 
 using namespace std;
@@ -10,9 +11,9 @@ using namespace std;
  */
 class Parser {
 private:
-    char *buffer;
-    int pos;
+    char current;
     int file_size;
+    ifstream infile;
 
 public:
     enum token {
@@ -34,10 +35,11 @@ public:
     string ErrorMesg;
 
     Parser(string in_fn);
+    ~Parser() {infile.close();}
 
     token getNextToken();
-    void setPosition(int p) {pos = p;}
-    int getPosition() {return pos;}
+    void setPosition(int p) {infile.clear();infile.seekg(p, ios::beg);current=infile.get();}
+    int getPosition() {return infile.tellg();}
 };
 
 #endif

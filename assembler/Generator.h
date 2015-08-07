@@ -29,7 +29,7 @@ private:
     string lnToString();
 
 public:
-    static const unsigned int CodeMaxSize = 2048;
+    static const unsigned int CodeMaxSize = 2500;
     bool error;
 
     Generator(Parser*);

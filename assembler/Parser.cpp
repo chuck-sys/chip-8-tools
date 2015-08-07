@@ -1,10 +1,20 @@
-#include <cctype>
-
 #include "Parser.h"
 #include "Utilities.h"
 
+using namespace std;
+
 Parser::Parser(string in_fn) {
     // Opens and reads from file to buffer
+    infile.open(in_fn, ios::binary);
+
+    if (infile.bad()) {
+        ErrorMesg = "Fatal Error: File does not exist!!";
+        return;
+    }
+
+    current = infile.get();
+
+    /*
     FILE *f = fopen(in_fn.c_str(), "rb");
 
     if (f == NULL) {
@@ -25,25 +35,25 @@ Parser::Parser(string in_fn) {
     fread(buffer, 1, file_size, f);
 
     fclose(f);
+    */
 
     // Other intializations
     Parsed = "";
     ErrorMesg = "";
-    pos = 0;
 }
 
 Parser::token Parser::getNextToken() {
     // Skip any whitespace (not including a newline)
-    while (buffer[pos] == ' ' || buffer[pos] == '\t')
-        pos++;
+    while (current == ' ' || current == '\t')
+        current = infile.get();
 
-    if (buffer[pos] == 'V') {
+    if (current == 'V') {
         // Check if it names a valid register
         Parsed = "";
-        pos++;
-        if (isHexDigit(buffer[pos])) {
-            Parsed = buffer[pos];
-            pos++;
+        current = infile.get();
+        if (isHexDigit(current)) {
+            Parsed = current;
+            current = infile.get();
             return reg_token;
         }
         else {
@@ -51,56 +61,66 @@ Parser::token Parser::getNextToken() {
             return error_state;
         }
     }
-    else if (buffer[pos] == ';') {
+    else if (current == ';') {
         // Ignore any and all comments
-        while (buffer[pos] != '\n')
-            pos++;
+        while (current != '\n')
+            current = infile.get();
     }
-    else if (buffer[pos] == 'I') {
+    else if (current == 'I') {
         // It is the indexer!
-        pos++;
+        current = infile.get();
         return ireg_token;
     }
-    else if (buffer[pos] == 'K') {
+    else if (current == 'K') {
         // It's a key!
-        pos++;
+        current = infile.get();
         return key_token;
     }
-    else if (buffer[pos] == 'D') {
-        if (buffer[pos+1] == 'T') {
-            pos += 2;
+    else if (current == 'D') {
+        if (infile.get() == 'T') {
+            current = infile.get();
             return dt_token;
         }
-    }
-    if (buffer[pos] == 'S') {
-        if (buffer[pos+1] == 'T') {
-            pos += 2;
-            return st_token;
+        else {
+            infile.unget();
+            infile.unget();
+            current = infile.get();
         }
     }
-    if (isHexDigit(buffer[pos])) {
+    if (current == 'S') {
+        if (infile.get() == 'T') {
+            current = infile.get();
+            return st_token;
+        }
+        else {
+            infile.unget();
+            infile.unget();
+            current = infile.get();
+        }
+    }
+    if (isHexDigit(current)) {
         // Check if it is a hex number
-        Parsed = buffer[pos];
-        pos++;
-        while (isHexDigit(buffer[pos])) {
-            Parsed += buffer[pos];
-            pos++;
+        Parsed = current;
+        current = infile.get();
+        while (isHexDigit(current)) {
+            Parsed += current;
+            current = infile.get();
         }
         return hexnum_token;
     }
-    if (isalpha(buffer[pos])) {
+    if (isalpha(current)) {
         // Check for a mnemonic or a label
-        Parsed = buffer[pos];
-        pos++;
+        Parsed = current;
+        current = infile.get();
 
-        while (buffer[pos] != ':' && buffer[pos] != ' ' && buffer[pos] != '\n' && buffer[pos] != '\t') {
-            Parsed += buffer[pos];
-            pos++;
+        while (current != ' ' && current != ':' && current != '\n' && current != '\t') {
+            Parsed += current;
+            current = infile.get();
         }
 
-        if (buffer[pos] == ':') {
+        if (current == ':') {
             // If it's a label, skip the colon and return
-            pos++;
+            current = infile.get();
             return label_token;
         }
         else {
@@ -108,20 +128,20 @@ Parser::token Parser::getNextToken() {
             return mnemonic_token;
         }
     }
-    else if (buffer[pos] == ',') {
-        pos++;
+    else if (current == ',') {
+        current = infile.get();
         return comma_token;
     }
-    else if (buffer[pos] == '\n') {
-        pos++;
+    else if (current == '\n') {
+        current = infile.get();
         return nl_token;
     }
-    else if (pos >= file_size) {
+    else if (infile.eofbit) {
         // End of file reached; abort
         // Don't increment counter
         return eof_token;
     }
 
-    ErrorMesg = to_string(buffer[pos]);
+    ErrorMesg = to_string(current);
     return error_state;
 }
