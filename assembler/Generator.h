@@ -30,7 +30,7 @@ private:
 
 public:
     static const unsigned int CodeMaxSize = 2500;
-    int passes = 2;
+    int passes;
     bool error;
 
     Generator(Parser*);

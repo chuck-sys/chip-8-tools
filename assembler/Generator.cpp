@@ -7,6 +7,7 @@
 Generator::Generator(Parser *p) {
     parser = p;
 
+    passes = 2;
     error = false;
     ind = 0;
     lineno = 1;
