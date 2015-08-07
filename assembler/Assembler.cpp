@@ -14,9 +14,10 @@ int main(int argc, char **argv) {
     }
 
     string source_fn = "", binary_fn = "a.out";
+    bool one_pass = false;
 
     // Argument parsing
-    for (int i=0; i<argc; i++) {
+    for (int i=1; i<argc; i++) {
         if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--out") == 0) {
             // If you have set the output to something (maybe)
             // Set the output
@@ -26,25 +27,33 @@ int main(int argc, char **argv) {
                 cerr << "Error: Must have a filename after `-o'\n";
                 return -1;
             }
-            continue;
         }
-        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+        else if (strcmp(argv[i], "-1p") == 0 || strcmp(argv[i], "--one-pass") == 0) {
+            one_pass = true;
+        }
+        else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             // Gives some help
-            cout << "Chip 8 Assembler by Cheuk Yin Ng" << endl
-                << "Report all bugs to <https://github.com/cheukyin699/chip-8-tools/>."
-                << "Usage:\n"
-                << argv[0] << " [options] <source>" << endl << endl
-                << "Options:\n"
-                << "  -o <file>             Place the output into <file>\n";
+            cout << "Chip 8 Assembler by Cheuk Yin Ng\n"
+                "Report all bugs to <https://github.com/cheukyin699/chip-8-tools/>.\n\n"
+                "Usage:\n"
+                << argv[0] << " [options] <source>\n\n"
+                "Options:\n"
+                "  -o <file>\n"
+                "  --out <file>             Place the output into <file>\n\n"
+                "  -h, --help               Shows this help text\n\n"
+                "  -1p, --one-pass          Makes 1 pass instead of 2, halving compilation time, but\n"
+                "                           only use this option if you know you don't have any labels\n"
+                "                           that are used before they are declared.\n";
             return 0;
         }
-
-        // If there is nothing else, set the source filename
-        source_fn = string(argv[i]);
+        else {
+            // If there is nothing else, set the source filename
+            source_fn = string(argv[i]);
+        }
     }
 
     // Check for a source file
-    if (source_fn == "") {
+    if (source_fn.empty()) {
         cerr << "Error: Must have a source file\n";
         return -1;
     }
@@ -59,6 +68,10 @@ int main(int argc, char **argv) {
     }
 
     Generator *generator = new Generator(parser);
+
+    // Sets the arguments
+    if (one_pass)
+        generator->passes = 1;
 
     generator->run();
     if (!generator->error)

@@ -30,11 +30,12 @@ private:
 
 public:
     static const unsigned int CodeMaxSize = 2500;
+    int passes = 2;
     bool error;
 
     Generator(Parser*);
 
-    /* Pass over the code 2 times
+    /* Pass over the code n times
      *
      * The first pass would parse all the tokens
      * that aren't symbols (labels). It will store

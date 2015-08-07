@@ -833,76 +833,47 @@ void Generator::genForOpcode() {
 }
 
 void Generator::run() {
-    // First pass
-    for (Parser::token t = parser->getNextToken();
-            t != Parser::eof_token;
-            t = parser->getNextToken()) {
-        switch (t) {
-            case Parser::error_state:
-                // Print the error, along with the line it occured on
-                handlePError();
-                break;
-            case Parser::label_token:
-                // Record where it lay
-                symbols_map[parser->Parsed] = ind + 0x200;
-                break;
-            case Parser::reg_token:
-                break;
-            case Parser::hexnum_token:
-                break;
-            case Parser::comma_token:
-                break;
-            case Parser::mnemonic_token:
-                // Go through all the other tokens until a newline token
-                genForOpcode();
-                break;
-            case Parser::nl_token:
-                lineno++;
-                break;
-            default:
-                break;
-        }
-    }
+    for (int pass = 0; pass < passes; pass++) {
+        // Reset everything
+        parser->setPosition(0);
+        ind = 0;
 
-    // Reset everything and initiate the second pass
-    parser->setPosition(0);
-    ind = 0;
-
-    for (Parser::token t = parser->getNextToken();
-            t != Parser::eof_token;
-            t = parser->getNextToken()) {
-        switch (t) {
-            case Parser::error_state:
-                // Print the error, along with the line it occured on
-                handlePError();
-                break;
-            case Parser::label_token:
-                // Record where it lay
-                symbols_map[parser->Parsed] = ind + 0x200;
-                break;
-            case Parser::reg_token:
-                break;
-            case Parser::hexnum_token:
-                // In the case of any numbers, insert them
-                // directly into the code
-                {
-                    int data = stringToHex(parser->Parsed);
-                    code[ind] = data >> 8;
-                    code[ind+1] = data & 0xff;
-                    ind += 2;
+        for (Parser::token t = parser->getNextToken();
+                t != Parser::eof_token;
+                t = parser->getNextToken()) {
+            switch (t) {
+                case Parser::error_state:
+                    // Print the error, along with the line it occured on
+                    handlePError();
                     break;
-                }
-            case Parser::comma_token:
-                break;
-            case Parser::mnemonic_token:
-                // The lazy man's way out
-                genForOpcode();
-                break;
-            case Parser::nl_token:
-                lineno++;
-                break;
-            default:
-                break;
+                case Parser::label_token:
+                    // Record where it lay
+                    symbols_map[parser->Parsed] = ind + 0x200;
+                    break;
+                case Parser::reg_token:
+                    break;
+                case Parser::hexnum_token:
+                    // In the case of any numbers, insert them
+                    // directly into the code
+                    {
+                        int data = stringToHex(parser->Parsed);
+                        code[ind] = data >> 8;
+                        code[ind+1] = data & 0xff;
+                        ind += 2;
+                        break;
+                    }
+                case Parser::comma_token:
+                    break;
+                case Parser::mnemonic_token:
+                    // The lazy man's way out
+                    genForOpcode();
+                    break;
+                case Parser::nl_token:
+                    lineno++;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
