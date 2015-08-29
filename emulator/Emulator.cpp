@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     // Sound initializations
     Int16 raw[Samples];
     double x = 0;
-    for (int i=0; i<Samples; i++) {
+    for (unsigned i=0; i<Samples; i++) {
         raw[i] = Amptitude * sin(x * TAU);
         x += Increment;
     }

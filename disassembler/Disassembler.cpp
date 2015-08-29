@@ -2,6 +2,8 @@
 #include <cstring>
 #include <iostream>
 
+#include <config.h>
+
 using namespace std;
 
 void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
@@ -242,25 +244,40 @@ int main(int argc, char **argv) {
     }
     bool clean = false;
     bool padded = true;
+    int src_pos = 1;
     for (int i=0; i<argc; i++) {
-        if (strcmp(argv[i], "-c") == 0)
+        if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--clean") == 0)
             clean = true;
-        if (strcmp(argv[i], "--clean") == 0)
-            clean = true;
-        if (strcmp(argv[i], "-n") == 0)
+        else if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--no-padding") == 0)
             padded = false;
-        if (strcmp(argv[i], "--no-padding") == 0)
-            padded = false;
+        else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            // Display help
+            cout << "Chip 8 Disassembler " VERSION " by Cheuk Yin Ng\n"
+                "Report all bugs to <" REP_ADDR ">.\n\n"
+                "Usage:\n"
+                << argv[0] << " [options] <filename>\n\n"
+                "Options:\n"
+                "  -c, --clean          Does not show the address of where the commands\n"
+                "                       are in memory. Only assembler is outputted.\n\n"
+                "  -n, --no-padding     Does not add 0x200 to addresses\n\n"
+                "  -h, --help           Shows this helpful message\n";
+            return 0;
+        }
+        else {
+            // If there is nothing else, take it as the source
+            src_pos = i;
+        }
     }
 
     // Programs normally begin at
     // memory location 512 and above, so
     // load the file in there
-    FILE *f = fopen(argv[1], "rb");
+    FILE *f = fopen(argv[src_pos], "rb");
 
     if (f == NULL) {
         // Error: No file found
-        return false;
+        cerr << "Error: File `" << argv[src_pos] << "' not found\n";
+        return -1;
     }
 
     // Grab file size

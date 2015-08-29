@@ -1,6 +1,8 @@
 #include <cstring>
 #include <iostream>
 
+#include <config.h>
+
 #include "Parser.h"
 #include "Generator.h"
 
@@ -33,8 +35,8 @@ int main(int argc, char **argv) {
         }
         else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             // Gives some help
-            cout << "Chip 8 Assembler by Cheuk Yin Ng\n"
-                "Report all bugs to <https://github.com/cheukyin699/chip-8-tools/>.\n\n"
+            cout << "Chip 8 Assembler " VERSION " by Cheuk Yin Ng\n"
+                "Report all bugs to <" REP_ADDR ">.\n\n"
                 "Usage:\n"
                 << argv[0] << " [options] <source>\n\n"
                 "Options:\n"
