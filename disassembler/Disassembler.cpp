@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned short offset=0x200) {
+void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
     // Run an opcode
     unsigned char *code = &buffer[pc];
     unsigned char hinib = code[0] >> 4;
@@ -57,7 +57,10 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned sh
         case 0x5:
             // Skips next instruction if VX == VY
             // SE
-            printf("SE\tV%x, V%x", x, y);
+            if (n == 0)
+                printf("SE\tV%x, V%x", x, y);
+            else
+                printf("%02x%02x", code[0], code[1]);
             break;
         case 0x6:
             // Set VX to NN
@@ -125,7 +128,10 @@ void emulateStep(unsigned char *buffer, unsigned int pc, bool clean, unsigned sh
         case 0x9:
             // Skips next instruction if VX != VY
             // SNE
-            printf("SNE\tV%x, V%x", x, y);
+            if (n == 0)
+                printf("SNE\tV%x, V%x", x, y);
+            else
+                printf("%02x%02x", code[0], code[1]);
             break;
         case 0xa:
             // Sets index register I to NNN
@@ -279,7 +285,7 @@ int main(int argc, char **argv) {
 
 
 
-    for (unsigned int pc=0; pc<file_size; pc+=2) {
+    for (unsigned pc=0; pc<file_size; pc+=2) {
         emulateStep(buffer, pc, clean, offset);
     }
 
