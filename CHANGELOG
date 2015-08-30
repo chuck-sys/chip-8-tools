@@ -1,0 +1,50 @@
+Change Log
+**********
+
+All notable changes to this project will be documented in this file. This
+project adheres to semantic versioning.
+
+
+Unreleased - YYYY-MM-DD 
+=======================
+
+Added:
+- documentation in docs
+- help screen
+- tutorial for startup
+- GNU GPL v3 license
+
+
+v1.1.1 - 2015-08-29
+===================
+
+Fixed:
+- issue #1: data/mnemonic recognition ambiguity for disassembler
+
+Changed:
+- more warnings when compiling with -Wall
+
+
+v1.1.0 - 2015-08-07
+===================
+
+Added:
+- one-pass mode for assembler
+
+
+v1.0.1 - 2015-08-07
+===================
+
+Changed:
+- removed char buffer; now reads directly from file - assembler
+
+
+v1.0.0 - 2015-08-05
+===================
+
+This is the inital release of the chip-8 toolset
+
+Added:
+- assembler
+- emulator
+- disassembler
