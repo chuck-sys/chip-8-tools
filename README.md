@@ -16,8 +16,8 @@ currently emulate the following without major problems:
 - TANK (?)
 - TETRIS
 
-The others may sometimes randomly seg. fault, or may do something unexpected,
-but I'm working on that.
+The others may sometimes randomly segmentation fault, or may do something
+unexpected, but I'm working on that.
 
 The disassembler works on all chip-8 files.
 
