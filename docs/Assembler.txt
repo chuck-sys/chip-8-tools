@@ -1,4 +1,5 @@
-## Chip-8 Assembler Syntax
+Chip-8 Assembler Syntax
+=======================
 
 Here is a slightly large table of what works in the Chip-8 Assembler:
 
@@ -40,53 +41,50 @@ PUSH | Fx55 | `PUSH Vf` | Pushes all registers from V[0] to V[x] inclusive to lo
 POP | Fx65 | `POP Vf` | Pops all registers from V[0] to V[x] inclusive from location I, I+1, ...
 
 
-### Syntax
+Syntax
+======
 
-``` asm
-; Infinite loop
-JP 200
-```
+    ; Infinite loop
+    JP 200
 
 Comments are one-liners starting with `;` character.
 
-``` asm
-LD I, sprite1
-DRW V0, V1, 2
+    LD I, sprite1
+    DRW V0, V1, 2
 
-sprite1:
-; To insert data, just have the number there;
-; automatic insertion will take place
-000f
-```
+    sprite1:
+    ; To insert data, just have the number there;
+    ; automatic insertion will take place
+    000f
 
 For convenience's sake, all addresses can be labeled.
 
 
-### Usage
+Usage
+=====
 
-```
-./Chip8_Assembler [options] <filename>
+    ./Chip8_Assembler [options] <filename>
 
-Options:
-  -o <file>
-  --out <file>             Place the output into <file>
+    Options:
+      -o <file>
+      --out <file>             Place the output into <file>
 
-  -h, --help               Shows this help text
+      -h, --help               Shows this help text
 
-  -1p, --one-pass          Makes 1 pass instead of 2, halving compilation time, but
-                           only use this option if you know you don't have any labels
-                           that are used before they are declared.
-```
+      -1p, --one-pass          Makes 1 pass instead of 2, halving compilation time, but
+                               only use this option if you know you don't have any labels
+                               that are used before they are declared.
 
 
-### Output
+Output
+======
 
-With no options, the assembler outputs the compiled code into file `a.out`,
+With no options, the assembler outputs the compiled code into file `a.out',
 passing over it twice.
 
 If you don't have labels in code that are used before defined (post-defined?),
-or don't have labels in general, you may also add option `-1p` to make compiling
+or don't have labels in general, you may also add option `-1p' to make compiling
 faster by making 1 pass instead of 2.
 
 To specify the filename for the compiled code (and to avoid the step of renaming
-file `a.out` to something else), use option `-o <filename>`.
+file `a.out' to something else), use option `-o <filename>'.
