@@ -1,7 +1,4 @@
-## Chip-8 Assembler Documentation
-
-___DISCLAIMER: All these mnemonics are created by the author, and (should) only work
-with the Assembler that the author has created. It should not work for all assemblers.___
+## Chip-8 Assembler Syntax
 
 Here is a slightly large table of what works in the Chip-8 Assembler:
 
