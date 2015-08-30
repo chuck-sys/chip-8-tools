@@ -52,8 +52,8 @@ class Chip_8 {
         void popRegisters(unsigned char x);
 
     public:
-        unsigned int dt;            // Delay timer register
-        unsigned int st;            // Sound timer register
+        unsigned dt;                // Delay timer register
+        unsigned st;                // Sound timer register
         bool drawf;                 // Do we need to draw anything?
         bool error;
         string error_txt;

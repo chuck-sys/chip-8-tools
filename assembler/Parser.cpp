@@ -24,7 +24,7 @@ Parser::Parser(string in_fn) {
     }
 
     fseek(f, 0, SEEK_END);
-    unsigned int file_size = ftell(f);
+    unsigned file_size = ftell(f);
     fseek(f, 0, SEEK_SET);
 
     // Initialize buffer

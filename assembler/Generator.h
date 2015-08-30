@@ -13,11 +13,11 @@ private:
     Parser *parser;
 
     // symbols_map["string"] = address
-    map<string, unsigned int> symbols_map;
+    map<string, unsigned> symbols_map;
 
     unsigned char *code;
-    unsigned int ind;
-    unsigned int lineno;
+    unsigned ind;
+    unsigned lineno;
 
     /* Handles incrementing the indexer too */
     void genForOpcode();
@@ -29,7 +29,7 @@ private:
     string lnToString();
 
 public:
-    static const unsigned int CodeMaxSize = 2500;
+    static const unsigned CodeMaxSize = 2500;
     int passes;
     bool error;
 

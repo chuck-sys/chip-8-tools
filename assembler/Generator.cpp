@@ -882,7 +882,7 @@ void Generator::run() {
 void Generator::output(string fn) {
     ofstream of(fn, ios::binary);
     if (of.is_open()) {
-        for (int i=0; i<ind; i++) {
+        for (unsigned i=0; i<ind; i++) {
             of << code[i];
         }
     }
