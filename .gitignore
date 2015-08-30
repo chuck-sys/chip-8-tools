@@ -4,3 +4,6 @@ Chip-8_Disassembler
 
 # CMAKE
 build/
+
+# YCM
+.ycm_extra_conf.py
