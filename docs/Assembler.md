@@ -42,14 +42,14 @@ POP | Fx65 | `POP Vf` | Pops all registers from V[0] to V[x] inclusive from loca
 
 ### Syntax
 
-```
+``` asm
 ; Infinite loop
 JP 200
 ```
 
 Comments are one-liners starting with `;` character.
 
-```
+``` asm
 LD I, sprite1
 DRW V0, V1, 2
 
@@ -60,3 +60,33 @@ sprite1:
 ```
 
 For convenience's sake, all addresses can be labeled.
+
+
+### Usage
+
+```
+./Chip8_Assembler [options] <filename>
+
+Options:
+  -o <file>
+  --out <file>             Place the output into <file>
+
+  -h, --help               Shows this help text
+
+  -1p, --one-pass          Makes 1 pass instead of 2, halving compilation time, but
+                           only use this option if you know you don't have any labels
+                           that are used before they are declared.
+```
+
+
+### Output
+
+With no options, the assembler outputs the compiled code into file `a.out`,
+passing over it twice.
+
+If you don't have labels in code that are used before defined (post-defined?),
+or don't have labels in general, you may also add option `-1p` to make compiling
+faster by making 1 pass instead of 2.
+
+To specify the filename for the compiled code (and to avoid the step of renaming
+file `a.out` to something else), use option `-o <filename>`.
