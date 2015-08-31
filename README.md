@@ -25,7 +25,7 @@ limitations.
 
 For more information, please see `docs/` or the [wiki][wiki].
 
-To build these tools, please see `docs/Tutorials` or the [wiki tutorials][wt].
+To build these tools, please see `docs/Tutorials.txt` or the [wiki tutorials][wt].
 
 
 [wiki]: https://github.com/cheukyin699/chip-8-tools/wiki
