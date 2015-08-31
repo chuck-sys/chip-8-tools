@@ -12,9 +12,15 @@ Options
       -fg <color>,
       --foreground <color>     Set custom foreground color (32-bit RGBA)
 
+      -f <fps>,
+      --fps <fps>              Set frames per second
+
 
 Usage
 =====
+
+The Chip-8 keypad
+-----------------
 
 The Chip-8 hex keypad is mapped to the QWERTY keyboard like this:
 

@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
 
     // Arguments parsing
     int ind = 1;
+    unsigned fps = 60;
     for (int i=1; i<argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
@@ -59,17 +60,40 @@ int main(int argc, char **argv) {
                 "  -bg <color>,\n"
                 "  --background <color>     Set custom background color (32-bit RGBA)\n\n"
                 "  -fg <color>,\n"
-                "  --foreground <color>     Set custom foreground color (32-bit RGBA)\n";
+                "  --foreground <color>     Set custom foreground color (32-bit RGBA)\n\n"
+                "  -f <fps>,\n"
+                "  --fps <fps>              Set frames per second\n";
             return 0;
         }
         else if (strcmp(argv[i], "-bg") == 0 || strcmp(argv[i], "--background") == 0) {
             if (++i < argc) {
                 bg = Color(atoi(argv[i]));
             }
+            else {
+                cerr << "Expected an integer.\n";
+                return -1;
+            }
         }
         else if (strcmp(argv[i], "-fg") == 0 || strcmp(argv[i], "--foreground") == 0) {
             if (++i < argc) {
                 fg = Color(atoi(argv[i]));
+            }
+            else {
+                cerr << "Expected an integer.\n";
+                return -1;
+            }
+        }
+        else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--fps") == 0) {
+            if (++i < argc) {
+                fps = atoi(argv[i]);
+                if (fps == 0) {
+                    cerr << "That isn't a valid integer.\n";
+                    return -1;
+                }
+            }
+            else {
+                cerr << "Expected an integer.\n";
+                return -1;
             }
         }
         else {
@@ -134,7 +158,7 @@ int main(int argc, char **argv) {
             window->display();
 
             // Stay at 60 FPS
-            float sleep_time = 1/60.-c.getElapsedTime().asSeconds();
+            float sleep_time = 1./fps-c.getElapsedTime().asSeconds();
             if (sleep_time > 0)
                 sleep(seconds(sleep_time));
             c.restart();

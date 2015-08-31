@@ -14,6 +14,7 @@ Added:
 - tutorial for startup
 - GNU GPL v3 license
 - emulator: custom colors (32-bit RGBA) for background & foreground
+- emulator: custom fps
 - emulator: a help dialog
 
 
