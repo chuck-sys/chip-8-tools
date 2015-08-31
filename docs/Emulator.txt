@@ -1,9 +1,20 @@
+Options
+=======
+
+    ./Chip8_Emulator [options] <chip8_bin>
+
+    Options:
+      -h, --help               Shows this help text
+
+      -bg <color>,
+      --background <color>     Set custom background color (32-bit RGBA)
+
+      -fg <color>,
+      --foreground <color>     Set custom foreground color (32-bit RGBA)
+
+
 Usage
 =====
-
-There are no options, just a filename.
-
-    ./Chip8_Emulator <filename>
 
 The Chip-8 hex keypad is mapped to the QWERTY keyboard like this:
 

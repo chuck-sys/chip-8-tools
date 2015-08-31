@@ -19,8 +19,11 @@
 #include <SFML/Audio.hpp>
 
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <string>
+
+#include <config.h>
 
 #include "Chip_8.h"
 
@@ -33,7 +36,7 @@ const unsigned Amptitude = 30000;
 const double TAU = 6.28318;
 const double Increment = 440./44100;
 
-Color bg, fg;
+Color bg = Color::Black, fg = Color::White;
 
 int main(int argc, char **argv) {
     // Arguments checking
@@ -43,15 +46,44 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    // Arguments parsing
+    int ind = 1;
+    for (int i=1; i<argc; i++) {
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
+                "Report all bugs to <" REP_ADDR ">.\n\n"
+                "Usage:\n"
+                << argv[0] << " [options] <chip8_bin>\n\n"
+                "Options:\n"
+                "  -h, --help               Shows this help text\n\n"
+                "  -bg <color>,\n"
+                "  --background <color>     Set custom background color (32-bit RGBA)\n\n"
+                "  -fg <color>,\n"
+                "  --foreground <color>     Set custom foreground color (32-bit RGBA)\n";
+            return 0;
+        }
+        else if (strcmp(argv[i], "-bg") == 0 || strcmp(argv[i], "--background") == 0) {
+            if (++i < argc) {
+                bg = Color(atoi(argv[i]));
+            }
+        }
+        else if (strcmp(argv[i], "-fg") == 0 || strcmp(argv[i], "--foreground") == 0) {
+            if (++i < argc) {
+                fg = Color(atoi(argv[i]));
+            }
+        }
+        else {
+            // Or else it will be that argument
+            ind = i;
+        }
+    }
+
     Chip_8 *c8cpu = new Chip_8();
-    bg = Color::Black;
-    fg = Color::White;
-    string title = argv[1];
-    RenderWindow *window = new RenderWindow(VideoMode(800, 500), argv[1]);      // Filename is the title
+    RenderWindow *window = new RenderWindow(VideoMode(800, 500), argv[ind]);      // Filename is the title
     Clock c;
 
     // Initializations with the chip8 cpu
-    c8cpu->initialize(argv[1]);
+    c8cpu->initialize(argv[ind]);
 
     // Sound initializations
     Int16 raw[Samples];

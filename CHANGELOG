@@ -13,6 +13,8 @@ Added:
 - help screen
 - tutorial for startup
 - GNU GPL v3 license
+- emulator: custom colors (32-bit RGBA) for background & foreground
+- emulator: a help dialog
 
 
 v1.1.1 - 2015-08-29
@@ -36,7 +38,7 @@ v1.0.1 - 2015-08-07
 ===================
 
 Changed:
-- removed char buffer; now reads directly from file - assembler
+- assembler: removed char buffer; now reads directly from file
 
 
 v1.0.0 - 2015-08-05
