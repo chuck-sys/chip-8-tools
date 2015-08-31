@@ -1,8 +1,6 @@
 Chip-8 Toolset
 --------------
 
-![travis-ci][1]
-
 This is a set of tools for emulating and looking at chip-8 files. It can
 currently emulate the following without major problems:
 - 15PUZZLE
@@ -30,6 +28,5 @@ For more information, please see `docs/` or the [wiki][wiki].
 To build these tools, please see `docs/Tutorials` or the [wiki tutorials][wt].
 
 
-[1]: https://travis-ci.org/cheukyin699/chip-8-tools.svg?branch=master
 [wiki]: https://github.com/cheukyin699/chip-8-tools/wiki
 [wt]: https://github.com/cheukyin699/chip-8-tools/wiki/A-Quick-Tutorial
