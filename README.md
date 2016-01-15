@@ -14,6 +14,8 @@ currently emulate the following without major problems:
 - TANK (?)
 - TETRIS
 
+(?) - I don't know if it is supposed to work like that.
+
 The others may sometimes randomly segmentation fault, or may do something
 unexpected, but I'm working on that.
 
