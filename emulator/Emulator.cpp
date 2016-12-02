@@ -103,7 +103,9 @@ int main(int argc, char **argv) {
     }
 
     Chip_8 *c8cpu = new Chip_8();
-    RenderWindow *window = new RenderWindow(VideoMode(800, 500), argv[ind]);      // Filename is the title
+    RenderWindow *window = new RenderWindow(VideoMode(800, 500),
+                                            argv[ind],
+                                            Style::Close);
     Clock c;
 
     // Initializations with the chip8 cpu
