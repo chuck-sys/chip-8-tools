@@ -29,7 +29,6 @@ using namespace std;
 class Parser {
 private:
     char current;
-    int file_size;
     ifstream infile;
 
 public:
@@ -55,8 +54,8 @@ public:
     ~Parser() {infile.close();}
 
     token getNextToken();
-    void setPosition(int p) {infile.clear();infile.seekg(p, ios::beg);current=infile.get();}
-    int getPosition() {return infile.tellg();}
+    void setPosition(int);
+    int getPosition();
 };
 
 #endif

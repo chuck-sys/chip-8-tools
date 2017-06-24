@@ -29,14 +29,15 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
     unsigned char hinib = code[0] >> 4;
 
     // Some useful variables
-    unsigned nnn = ((code[0]&0xf) << 8) | code[1];
+    unsigned nnn = ((code[0] & 0xf) << 8) | code[1];
     unsigned nn = code[1];
     unsigned n = code[1] & 0xf;
     unsigned x = code[0] & 0xf;
     unsigned y = code[1] >> 4;
 
-    if (!clean)
-        printf("%04x: ", pc+offset);
+    if (!clean) {
+        printf("%04x: ", pc + offset);
+    }
 
     switch (hinib) {
         case 0x0:
@@ -76,10 +77,12 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
         case 0x5:
             // Skips next instruction if VX == VY
             // SE
-            if (n == 0)
+            if (n == 0) {
                 printf("SE\tV%x, V%x", x, y);
-            else
+            }
+            else {
                 printf("%02x%02x", code[0], code[1]);
+            }
             break;
         case 0x6:
             // Set VX to NN
@@ -92,7 +95,7 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
             printf("ADD\tV%x, %02x", x, nn);
             break;
         case 0x8:
-            switch (code[1]&0xf) {
+            switch (code[1] & 0xf) {
                 case 0x0:
                     // VX = VY
                     // LD
@@ -147,10 +150,12 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
         case 0x9:
             // Skips next instruction if VX != VY
             // SNE
-            if (n == 0)
+            if (n == 0) {
                 printf("SNE\tV%x, V%x", x, y);
-            else
+            }
+            else {
                 printf("%02x%02x", code[0], code[1]);
+            }
             break;
         case 0xa:
             // Sets index register I to NNN
@@ -303,7 +308,7 @@ int main(int argc, char **argv) {
     fseek(f, 0, SEEK_SET);
 
     unsigned char *buffer = new unsigned char[file_size];
-    for (int i=0; i<file_size; i++)
+    for (int i = 0; i < file_size; i++)
         buffer[i] = 0;
 
     // Read file to buffer
@@ -311,15 +316,12 @@ int main(int argc, char **argv) {
 
     fclose(f);
 
-
-
     unsigned short offset = 0;
-    if (padded)
+    if (padded) {
         offset = 0x200;
+    }
 
-
-
-    for (unsigned pc=0; pc<file_size; pc+=2) {
+    for (int pc = 0; pc < file_size; pc += 2) {
         emulateStep(buffer, pc, clean, offset);
     }
 

@@ -26,8 +26,8 @@ bool isHexDigit(char c) {
 
 int stringToHex(string seq) {
     int res = 0;
-    for (int i=0; i<seq.size(); i++) {
-        res += hexvals[seq.c_str()[i]]*pow(16, seq.size()-1-i);
+    for (unsigned i = 0; i < seq.size(); i++) {
+        res += hexvals[seq.c_str()[i]] * pow(16, seq.size() - 1 - i);
     }
     return res;
 }

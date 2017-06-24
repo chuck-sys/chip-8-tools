@@ -36,12 +36,13 @@ int main(int argc, char **argv) {
     bool one_pass = false;
 
     // Argument parsing
-    for (int i=1; i<argc; i++) {
+    for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--out") == 0) {
             // If you have set the output to something (maybe)
             // Set the output
-            if (++i<argc)
+            if (++i < argc) {
                 binary_fn = string(argv[i]);
+            }
             else {
                 cerr << "Error: Must have a filename after `-o'\n";
                 return -1;
@@ -89,14 +90,17 @@ int main(int argc, char **argv) {
     Generator *generator = new Generator(parser);
 
     // Sets the arguments
-    if (one_pass)
+    if (one_pass) {
         generator->passes = 1;
+    }
 
     generator->run();
-    if (!generator->error)
+    if (!generator->error) {
         generator->output(binary_fn);
-    else
+    }
+    else {
         cerr << "Cannot generate binary - some errors exist.\n";
+    }
 
     return 0;
 }

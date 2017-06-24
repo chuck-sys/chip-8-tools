@@ -34,7 +34,7 @@ const unsigned Samples = 44100;
 const unsigned Sample_Rate = 44100;
 const unsigned Amptitude = 30000;
 const double TAU = 6.28318;
-const double Increment = 440./44100;
+const double Increment = 440. / 44100;
 
 Color bg = Color::Black, fg = Color::White;
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     // Arguments parsing
     int ind = 1;
     unsigned fps = 60;
-    for (int i=1; i<argc; i++) {
+    for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
                 "Report all bugs to <" REP_ADDR ">.\n\n"
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     // Sound initializations
     Int16 raw[Samples];
     double x = 0;
-    for (unsigned i=0; i<Samples; i++) {
+    for (unsigned i = 0; i < Samples; i++) {
         raw[i] = Amptitude * sin(x * TAU);
         x += Increment;
     }
@@ -159,10 +159,11 @@ int main(int argc, char **argv) {
             c8cpu->drawDisplay(window, bg, fg);
             window->display();
 
-            // Stay at 60 FPS
-            float sleep_time = 1./fps-c.getElapsedTime().asSeconds();
-            if (sleep_time > 0)
+            // Stay at specified framerate
+            float sleep_time = 1. / fps-c.getElapsedTime().asSeconds();
+            if (sleep_time > 0) {
                 sleep(seconds(sleep_time));
+            }
             c.restart();
         }
 
@@ -179,7 +180,6 @@ int main(int argc, char **argv) {
             }
         }
     }
-
 
     return 0;
 }

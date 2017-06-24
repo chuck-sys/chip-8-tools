@@ -35,17 +35,21 @@ Chip_8::Chip_8() {
     pc = 512;
     // Display
     display = new unsigned char[Width*Height];
-    for (int i=0; i<Width*Height; i++)
+    for (int i=0; i<Width*Height; i++) {
         display[i] = 0;
+    }
     // Stack init
-    for (int i=0; i<16; i++)
+    for (int i=0; i<16; i++) {
         stack[i] = 0;
+    }
     // Keys init
-    for (int i=0; i<16; i++)
+    for (int i=0; i<16; i++) {
         keys[i] = false;
+    }
     // Registry init
-    for (int i=0; i<16; i++)
+    for (int i=0; i<16; i++) {
         V[i] = 0;
+    }
 
     // Initialize EVERYTHING to 0
     I = 0;
@@ -196,20 +200,21 @@ void Chip_8::loadHexSprites() {
 }
 
 inline void Chip_8::pushRegisters(unsigned char x) {
-    for (unsigned char i=0; i<=x; i++) {
+    for (unsigned char i = 0; i <= x; i++) {
         memory[I+i] = V[i];
     }
 }
 
 inline void Chip_8::popRegisters(unsigned char x) {
-    for (unsigned char i=0; i<=x; i++) {
+    for (unsigned char i = 0; i <= x; i++) {
         V[i] = memory[I+i];
     }
 }
 
 void Chip_8::clearScreen() {
-    for (int i=0; i<Width*Height; i++)
+    for (int i = 0; i < Width * Height; i++) {
         display[i] = 0;
+    }
     drawf = true;
 }
 
@@ -254,10 +259,12 @@ bool Chip_8::loadGame(const char *filename) {
 }
 
 inline void Chip_8::updateTimers() {
-    if (dt > 0)
+    if (dt > 0) {
         dt--;
-    if (st > 0)
+    }
+    if (st > 0) {
         st--;
+    }
 }
 
 void Chip_8::initialize(const char *filename) {
@@ -285,15 +292,17 @@ void Chip_8::handleKey(const Keyboard::Key key, bool pressed) {
 
 void Chip_8::drawDisplay(RenderWindow *w, Color bg, Color fg) {
     // Draws every single pixel
-    for (int y=0; y<Height; y++) {
-        for (int x=0; x<Width; x++) {
+    for (int y = 0; y < Height; y++) {
+        for (int x = 0; x < Width; x++) {
             RectangleShape rs;
-            rs.setPosition(x*Scale, y*Scale);
+            rs.setPosition(x * Scale, y * Scale);
             rs.setSize(Vector2f(Scale, Scale));
-            if (display[y*Width+x] == 1)
+            if (display[y * Width + x] == 1) {
                 rs.setFillColor(fg);
-            else
+            }
+            else {
                 rs.setFillColor(bg);
+            }
             w->draw(rs);
         }
     }
@@ -309,7 +318,7 @@ void Chip_8::emulateStep() {
     unsigned char hinib = code[0] >> 4;
 
     // Some useful variables
-    unsigned nnn = ((code[0]&0xf) << 8) | code[1];
+    unsigned nnn = ((code[0] & 0xf) << 8) | code[1];
     unsigned nn = code[1];
     unsigned n = code[1] & 0xf;
     unsigned x = code[0] & 0xf;

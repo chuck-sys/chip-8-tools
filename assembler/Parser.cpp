@@ -31,29 +31,6 @@ Parser::Parser(string in_fn) {
 
     current = infile.get();
 
-    /*
-    FILE *f = fopen(in_fn.c_str(), "rb");
-
-    if (f == NULL) {
-        // ERROR
-        ErrorMesg = "Fatal Error: File does not exist!!!";
-        return;
-    }
-
-    fseek(f, 0, SEEK_END);
-    unsigned file_size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    // Initialize buffer
-    buffer = new char[file_size];
-    for (int i=0; i<file_size; i++)
-        buffer[i] = 0;
-
-    fread(buffer, 1, file_size, f);
-
-    fclose(f);
-    */
-
     // Other intializations
     Parsed = "";
     ErrorMesg = "";
@@ -61,8 +38,9 @@ Parser::Parser(string in_fn) {
 
 Parser::token Parser::getNextToken() {
     // Skip any whitespace (not including a newline)
-    while (current == ' ' || current == '\t')
+    while (current == ' ' || current == '\t') {
         current = infile.get();
+    }
 
     if (current == 'V') {
         // Check if it names a valid register
@@ -80,8 +58,9 @@ Parser::token Parser::getNextToken() {
     }
     else if (current == ';') {
         // Ignore any and all comments
-        while (current != '\n')
+        while (current != '\n') {
             current = infile.get();
+        }
     }
     else if (current == 'I') {
         // It is the indexer!
@@ -130,7 +109,8 @@ Parser::token Parser::getNextToken() {
         Parsed = current;
         current = infile.get();
 
-        while (current != ' ' && current != ':' && current != '\n' && current != '\t') {
+        while (current != ' '  && current != ':' &&
+               current != '\n' && current != '\t') {
             Parsed += current;
             current = infile.get();
         }
@@ -153,7 +133,7 @@ Parser::token Parser::getNextToken() {
         current = infile.get();
         return nl_token;
     }
-    else if (infile.eofbit) {
+    else if (infile.eof()) {
         // End of file reached; abort
         // Don't increment counter
         return eof_token;
@@ -161,4 +141,14 @@ Parser::token Parser::getNextToken() {
 
     ErrorMesg = to_string(current);
     return error_state;
+}
+
+void Parser::setPosition(int p) {
+    infile.clear();
+    infile.seekg(p, ios::beg);
+    current=infile.get();
+}
+
+int Parser::getPosition() {
+    return infile.tellg();
 }
