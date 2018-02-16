@@ -28,26 +28,26 @@ Chip_8::Chip_8() {
     initKeyLookups();
     // The memory 4K
     memory = new unsigned char[4096];
-    for (int i=0; i<4096; i++) {
+    for (int i = 0; i < 4096; i++) {
         memory[i] = 0;
     }
     // Programs begin at 512
     pc = 512;
     // Display
-    display = new unsigned char[Width*Height];
-    for (int i=0; i<Width*Height; i++) {
+    display = new unsigned char[Width * Height];
+    for (int i = 0; i < Width * Height; i++) {
         display[i] = 0;
     }
     // Stack init
-    for (int i=0; i<16; i++) {
+    for (int i = 0; i < 16; i++) {
         stack[i] = 0;
     }
     // Keys init
-    for (int i=0; i<16; i++) {
+    for (int i = 0; i < 16; i++) {
         keys[i] = false;
     }
     // Registry init
-    for (int i=0; i<16; i++) {
+    for (int i = 0; i < 16; i++) {
         V[i] = 0;
     }
 
@@ -201,13 +201,13 @@ void Chip_8::loadHexSprites() {
 
 inline void Chip_8::pushRegisters(unsigned char x) {
     for (unsigned char i = 0; i <= x; i++) {
-        memory[I+i] = V[i];
+        memory[I + i] = V[i];
     }
 }
 
 inline void Chip_8::popRegisters(unsigned char x) {
     for (unsigned char i = 0; i <= x; i++) {
-        V[i] = memory[I+i];
+        V[i] = memory[I + i];
     }
 }
 
@@ -426,7 +426,7 @@ void Chip_8::emulateStep() {
                 case 0x6:
                     // Set VF = least significant bit VX, VX >>= 1
                     // Tested: Good
-                    VF = Vx&0x1;
+                    VF = Vx & 0x1;
                     Vx >>= 1;
                     break;
                 case 0x7:
@@ -437,7 +437,7 @@ void Chip_8::emulateStep() {
                 case 0xe:
                     // Set VF = most significant bit VX, VX <<= 1
                     // Tested: Good
-                    VF = Vx>>7;
+                    VF = Vx >> 7;
                     Vx <<= 1;
                     break;
             }
@@ -457,7 +457,7 @@ void Chip_8::emulateStep() {
         case 0xb:
             // Jumps to address NNN+V0
             // Tested: Good
-            pc = nnn+V[0];
+            pc = nnn + V[0];
             break;
         case 0xc:
             // Sets VX to random number masked by NN
@@ -519,7 +519,7 @@ void Chip_8::emulateStep() {
                     // Hex sprites are 8x5 bits
                     // They start at 0x00, so index them
                     // Tested: Good
-                    I = Vx*5;
+                    I = Vx * 5;
                     break;
                 case 0x33:
                     // Store BCD representation of VX in memory location I, I+1, I+2
@@ -532,8 +532,8 @@ void Chip_8::emulateStep() {
                         tens = value % 10;
                         hundreds = value / 10;
                         memory[I] = hundreds;
-                        memory[I+1] = tens;
-                        memory[I+2] = ones;
+                        memory[I + 1] = tens;
+                        memory[I + 2] = ones;
                     }
                     break;
                 case 0x55:
