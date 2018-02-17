@@ -22,6 +22,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include <config.h>
 
@@ -102,10 +103,10 @@ int main(int argc, char **argv) {
         }
     }
 
-    Chip_8 *c8cpu = new Chip_8();
-    RenderWindow *window = new RenderWindow(VideoMode(800, 500),
-                                            argv[ind],
-                                            Style::Close);
+    unique_ptr<Chip_8> c8cpu(new Chip_8());
+    shared_ptr<RenderWindow> window(new RenderWindow(VideoMode(800, 500),
+                                                     argv[ind],
+                                                     Style::Close));
     Clock c;
 
     // Initializations with the chip8 cpu
@@ -156,7 +157,7 @@ int main(int argc, char **argv) {
         // Drawing
         if (c8cpu->drawf) {
             window->clear(bg);
-            c8cpu->drawDisplay(window, bg, fg);
+            c8cpu->drawDisplay(window.get(), bg, fg);
             window->display();
 
             // Stay at specified framerate
