@@ -3,7 +3,7 @@ project (Chip8_Tools)
 
 # Versioning
 set (Chip8_Tools_VERSION_MAJOR 1)
-set (Chip8_Tools_VERSION_MINOR 1)
+set (Chip8_Tools_VERSION_MINOR 2)
 set (Chip8_Tools_VERSION_PATCH 1)
 set (Chip8_Tools_ADDR "https://github.com/cheukyin699/chip-8-tools/")
 

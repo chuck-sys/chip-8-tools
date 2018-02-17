@@ -29,7 +29,6 @@ class Generator {
 private:
     Parser *parser;
 
-    // symbols_map["string"] = address
     map<string, unsigned> symbols_map;
 
     unsigned char *code;
@@ -51,6 +50,7 @@ public:
     bool error;
 
     Generator(Parser*);
+    ~Generator();
 
     /* Pass over the code n times
      *
