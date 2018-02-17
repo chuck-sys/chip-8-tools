@@ -1,8 +1,6 @@
-// File: config.h.in
-// Version
 #define VERSION_MAJOR       "${Chip8_Tools_VERSION_MAJOR}"
-#define VERSION_MINOR       "${Chip8_Tools_VERSION_MAJOR}"
-#define VERSION_PATCH       "${Chip8_Tools_VERSION_MAJOR}"
+#define VERSION_MINOR       "${Chip8_Tools_VERSION_MINOR}"
+#define VERSION_PATCH       "${Chip8_Tools_VERSION_PATCH}"
 #define VERSION             "v" VERSION_MAJOR "." VERSION_MINOR "." VERSION_PATCH
 
 #define REP_ADDR            "${Chip8_Tools_ADDR}"
