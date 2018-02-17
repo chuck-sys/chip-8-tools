@@ -44,7 +44,7 @@ class Chip_8 {
         bool waitForKey;
 
         /* Loads the game file into memory */
-        bool loadGame(const char *filename);
+        bool loadGame(const string);
 
         /* Loads the hex sprites (0-F) into memory */
         void loadHexSprites();

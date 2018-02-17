@@ -16,10 +16,10 @@
  */
 
 #include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <ctime>
 #include <stdexcept>
+#include <string>
+#include <fstream>
 
 #include "Chip_8.h"
 
@@ -238,27 +238,27 @@ void Chip_8::displaySprite(unsigned char x, unsigned char y, unsigned char n_byt
     }
 }
 
-bool Chip_8::loadGame(const char *filename) {
+bool Chip_8::loadGame(const string filename) {
     // Programs normally begin at
     // memory location 512 and above, so
     // load the file in there
-    FILE *f = fopen(filename, "rb");
-    if (f == NULL) {
+    ifstream f(filename, ios_base::binary | ios_base::in);
+    if (!f.is_open()) {
         // Error: No file found
         return false;
     }
 
-    unsigned char *buffer = memory + 512;
+    char *buffer = reinterpret_cast<char*>(memory + 512);
 
     // Grab file size
-    fseek(f, 0, SEEK_END);
-    int file_size = ftell(f);
-    fseek(f, 0, SEEK_SET);
+    f.seekg(0, ios_base::end);
+    auto file_size = f.tellg();
+    f.seekg(0, ios_base::beg);
 
     // Read file to buffer
-    fread(buffer, 1, file_size, f);
+    f.read(buffer, file_size);
 
-    fclose(f);
+    f.close();
 
     return true;
 }
