@@ -38,6 +38,24 @@ const double Increment = 440. / 44100;
 
 Color bg = Color::Black, fg = Color::White;
 
+void printHelp(char **argv) {
+    cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
+        "Report all bugs to <" REP_ADDR ">.\n\n"
+        "Usage:\n"
+        << argv[0] << " [options] <chip8_bin>\n\n"
+        "Options:\n"
+        "  -h, --help               Shows this help text\n\n"
+        "  -bg <color>,\n"
+        "  --background <color>     Set custom background color (32-bit RGBA)\n\n"
+        "  -fg <color>,\n"
+        "  --foreground <color>     Set custom foreground color (32-bit RGBA)\n\n"
+        "  -f <fps>,\n"
+        "  --fps <fps>              Set frames per second\n";
+}
+
+#define PARSECOLOR(c) if (++i < argc) {c = Color(atoi(argv[i]));}\
+                      else {cerr << "Expected an integer.\n";return -1;}
+
 int main(int argc, char **argv) {
     // Arguments checking
     if (argc == 1) {
@@ -51,37 +69,14 @@ int main(int argc, char **argv) {
     unsigned fps = 60;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-            cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
-                "Report all bugs to <" REP_ADDR ">.\n\n"
-                "Usage:\n"
-                << argv[0] << " [options] <chip8_bin>\n\n"
-                "Options:\n"
-                "  -h, --help               Shows this help text\n\n"
-                "  -bg <color>,\n"
-                "  --background <color>     Set custom background color (32-bit RGBA)\n\n"
-                "  -fg <color>,\n"
-                "  --foreground <color>     Set custom foreground color (32-bit RGBA)\n\n"
-                "  -f <fps>,\n"
-                "  --fps <fps>              Set frames per second\n";
+            printHelp(argv);
             return 0;
         }
         else if (strcmp(argv[i], "-bg") == 0 || strcmp(argv[i], "--background") == 0) {
-            if (++i < argc) {
-                bg = Color(atoi(argv[i]));
-            }
-            else {
-                cerr << "Expected an integer.\n";
-                return -1;
-            }
+            PARSECOLOR(bg);
         }
         else if (strcmp(argv[i], "-fg") == 0 || strcmp(argv[i], "--foreground") == 0) {
-            if (++i < argc) {
-                fg = Color(atoi(argv[i]));
-            }
-            else {
-                cerr << "Expected an integer.\n";
-                return -1;
-            }
+            PARSECOLOR(fg);
         }
         else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--fps") == 0) {
             if (++i < argc) {
