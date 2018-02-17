@@ -69,16 +69,16 @@ class Chip_8 {
         void popRegisters(unsigned char x);
 
     public:
+        Chip_8();
+        ~Chip_8();
+
         unsigned dt;                // Delay timer register
         unsigned st;                // Sound timer register
         bool drawf;                 // Do we need to draw anything?
         bool error;
         string error_txt;
 
-        Chip_8();
-        ~Chip_8();
-
-        void initialize(const char *filename);
+        void initialize(const string);
         void handleKey(const Keyboard::Key key, bool pressed);
         void emulateStep();
         void drawDisplay(RenderWindow *w, Color bg, Color fg);
