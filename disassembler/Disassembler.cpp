@@ -257,32 +257,35 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
     printf("\n");
 }
 
+void printHelp(char **argv) {
+    cout << "Chip 8 Disassembler " VERSION " by Cheuk Yin Ng\n"
+        "Report all bugs to <" REP_ADDR ">.\n\n"
+        "Usage:\n"
+        << argv[0] << " [options] <filename>\n\n"
+        "Options:\n"
+        "  -c, --clean          Does not show the address of where the commands\n"
+        "                       are in memory. Only assembler is outputted.\n\n"
+        "  -n, --no-padding     Does not add 0x200 to addresses\n\n"
+        "  -h, --help           Shows this helpful message\n";
+}
+
 int main(int argc, char **argv) {
     // Arguments checking
     if (argc == 1) {
-        cerr << "Error: Invalid number of arguments.\n"
-            << "Usage: " << argv[0] << " <program_file>\n";
+        printHelp(argv);
         return -1;
     }
     bool clean = false;
     bool padded = true;
     int src_pos = 1;
-    for (int i=0; i<argc; i++) {
+    for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--clean") == 0)
             clean = true;
         else if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--no-padding") == 0)
             padded = false;
         else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             // Display help
-            cout << "Chip 8 Disassembler " VERSION " by Cheuk Yin Ng\n"
-                "Report all bugs to <" REP_ADDR ">.\n\n"
-                "Usage:\n"
-                << argv[0] << " [options] <filename>\n\n"
-                "Options:\n"
-                "  -c, --clean          Does not show the address of where the commands\n"
-                "                       are in memory. Only assembler is outputted.\n\n"
-                "  -n, --no-padding     Does not add 0x200 to addresses\n\n"
-                "  -h, --help           Shows this helpful message\n";
+            printHelp(argv);
             return 0;
         }
         else {
@@ -324,6 +327,8 @@ int main(int argc, char **argv) {
     for (int pc = 0; pc < file_size; pc += 2) {
         emulateStep(buffer, pc, clean, offset);
     }
+
+    delete[] buffer;
 
     return 0;
 }
