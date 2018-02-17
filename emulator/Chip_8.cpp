@@ -23,6 +23,11 @@
 
 #include "Chip_8.h"
 
+Chip_8::~Chip_8() {
+    delete[] memory;
+    delete[] display;
+}
+
 Chip_8::Chip_8() {
     // Key lookups
     initKeyLookups();

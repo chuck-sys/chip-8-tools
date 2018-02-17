@@ -76,6 +76,7 @@ class Chip_8 {
         string error_txt;
 
         Chip_8();
+        ~Chip_8();
 
         void initialize(const char *filename);
         void handleKey(const Keyboard::Key key, bool pressed);
