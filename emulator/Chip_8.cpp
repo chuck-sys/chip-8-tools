@@ -244,13 +244,13 @@ bool Chip_8::loadGame(const string filename) {
     // Programs normally begin at
     // memory location 512 and above, so
     // load the file in there
-    ifstream f(filename, ios_base::binary | ios_base::in);
+    ifstream f(filename, ios::binary | ios::in);
     if (!f.is_open()) {
         // Error: No file found
         return false;
     }
 
-    char *buffer = reinterpret_cast<char*>(memory + 512);
+    char* buffer = reinterpret_cast<char*>(memory + 512);
 
     // Grab file size
     f.seekg(0, ios_base::end);
@@ -299,7 +299,7 @@ void Chip_8::handleKey(const Keyboard::Key key, bool pressed) {
     }
 }
 
-void Chip_8::drawDisplay(RenderWindow *w, Color bg, Color fg) {
+void Chip_8::drawDisplay(RenderWindow* w, Color bg, Color fg) {
     // Draws every single pixel
     for (int y = 0; y < Height; y++) {
         for (int x = 0; x < Width; x++) {
@@ -323,7 +323,7 @@ void Chip_8::emulateStep() {
     updateTimers();
 
     // Run an opcode
-    unsigned char *code = &memory[pc];
+    unsigned char* code = &memory[pc];
     unsigned char hinib = code[0] >> 4;
 
     // Some useful variables
@@ -347,6 +347,7 @@ void Chip_8::emulateStep() {
                     // 00EE: Returns from subroutine
                     // Tested: Good
                     if (--sp < 0) {
+                        sp = 0;
                         error = true;
                         error_txt = "Error: No subroutine to return from\n";
                     }

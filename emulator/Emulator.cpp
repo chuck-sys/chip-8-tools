@@ -39,7 +39,7 @@ const double Increment = 440. / 44100;
 
 Color bg = Color::Black, fg = Color::White;
 
-void printHelp(char **argv) {
+void printHelp(char** argv) {
     cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
         "Report all bugs to <" REP_ADDR ">.\n\n"
         "Usage:\n"
@@ -57,7 +57,7 @@ void printHelp(char **argv) {
 #define PARSECOLOR(c) if (++i < argc) {c = Color(atoi(argv[i]));}\
                       else {cerr << "Expected an integer.\n";return -1;}
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     // Arguments checking
     if (argc == 1) {
         printHelp(argv);

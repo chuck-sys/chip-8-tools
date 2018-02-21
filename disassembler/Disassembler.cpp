@@ -18,15 +18,16 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <fstream>
 
 #include <config.h>
 
 using namespace std;
 
-void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
+void emulateStep(char* buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
     // Run an opcode
-    unsigned char *code = &buffer[pc];
-    unsigned char hinib = code[0] >> 4;
+    char* code = &buffer[pc];
+    char hinib = code[0] >> 4;
 
     // Some useful variables
     unsigned nnn = ((code[0] & 0xf) << 8) | code[1];
@@ -179,7 +180,7 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
             printf("DRW\tV%x, V%x, %02x", x, y, n);
             break;
         case 0xe:
-            switch (code[1]) {
+            switch ((unsigned char) code[1]) {
                 case 0x9e:
                     // Skip next instruction if key[VX] is pressed
                     // SKP (Skip if Key Pressed)
@@ -297,38 +298,35 @@ int main(int argc, char **argv) {
     // Programs normally begin at
     // memory location 512 and above, so
     // load the file in there
-    FILE *f = fopen(argv[src_pos], "rb");
+    ifstream f(argv[src_pos], ios::binary | ios::in);
 
-    if (f == NULL) {
+    if (f.is_open()) {
+        // Grab file size
+        f.seekg(0, ios_base::end);
+        auto file_size = f.tellg();
+        f.seekg(0, ios_base::beg);
+
+        char* buffer = new char[file_size];
+
+        // Read file to buffer and close
+        f.read(buffer, file_size);
+        f.close();
+
+        unsigned short offset = 0;
+        if (padded) {
+            offset = 0x200;
+        }
+
+        for (int pc = 0; pc < file_size; pc += 2) {
+            emulateStep(buffer, pc, clean, offset);
+        }
+
+        delete[] buffer;
+    } else {
         // Error: No file found
         cerr << "Error: File `" << argv[src_pos] << "' not found\n";
         return -1;
     }
-
-    // Grab file size
-    fseek(f, 0, SEEK_END);
-    int file_size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    unsigned char *buffer = new unsigned char[file_size];
-    for (int i = 0; i < file_size; i++)
-        buffer[i] = 0;
-
-    // Read file to buffer
-    fread(buffer, 1, file_size, f);
-
-    fclose(f);
-
-    unsigned short offset = 0;
-    if (padded) {
-        offset = 0x200;
-    }
-
-    for (int pc = 0; pc < file_size; pc += 2) {
-        emulateStep(buffer, pc, clean, offset);
-    }
-
-    delete[] buffer;
 
     return 0;
 }

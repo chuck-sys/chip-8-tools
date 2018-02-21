@@ -27,11 +27,11 @@ using namespace std;
 
 class Generator {
 private:
-    Parser *parser;
+    Parser* parser;
 
     map<string, unsigned> symbols_map;
 
-    unsigned char *code;
+    unsigned char* code;
     unsigned ind;
     unsigned lineno;
 

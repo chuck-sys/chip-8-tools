@@ -21,7 +21,7 @@
 #include "Generator.h"
 #include "Utilities.h"
 
-Generator::Generator(Parser *p) {
+Generator::Generator(Parser* p) {
     parser = p;
 
     passes = 2;
