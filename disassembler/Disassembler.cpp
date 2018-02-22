@@ -24,10 +24,10 @@
 
 using namespace std;
 
-void emulateStep(char* buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
+void emulateStep(unsigned char* buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
     // Run an opcode
-    char* code = &buffer[pc];
-    char hinib = code[0] >> 4;
+    unsigned char* code = &buffer[pc];
+    unsigned char hinib = code[0] >> 4;
 
     // Some useful variables
     unsigned nnn = ((code[0] & 0xf) << 8) | code[1];
@@ -42,19 +42,23 @@ void emulateStep(char* buffer, unsigned pc, bool clean, unsigned short offset=0x
 
     switch (hinib) {
         case 0x0:
-            switch (nn) {
-                case 0xe0:
-                    // 00E0: Clears the screen
-                    printf("CLS");
-                    break;
-                case 0xee:
-                    // 00EE: Returns from subroutine
-                    printf("RET");
-                    break;
-                default:
-                    // If it is a piece of data, insert directly into output
-                    printf("%02x%02x", code[0], code[1]);
-                    break;
+            if (code[0] != 0) {
+                printf("%02x%02x", code[0], code[1]);
+            } else {
+                switch (nn) {
+                    case 0xe0:
+                        // 00E0: Clears the screen
+                        printf("CLS");
+                        break;
+                    case 0xee:
+                        // 00EE: Returns from subroutine
+                        printf("RET");
+                        break;
+                    default:
+                        // If it is a piece of data, insert directly into output
+                        printf("%02x%02x", code[0], code[1]);
+                        break;
+                }
             }
             break;
         case 0x1:
@@ -306,10 +310,10 @@ int main(int argc, char **argv) {
         auto file_size = f.tellg();
         f.seekg(0, ios_base::beg);
 
-        char* buffer = new char[file_size];
+        unsigned char* buffer = new unsigned char[file_size];
 
         // Read file to buffer and close
-        f.read(buffer, file_size);
+        f.read(reinterpret_cast<char*>(buffer), file_size);
         f.close();
 
         unsigned short offset = 0;
