@@ -13,6 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Os -Wall")
 
 include_directories("${PROJECT_BINARY_DIR}")
 
+enable_testing()
 add_subdirectory("${PROJECT_SOURCE_DIR}/emulator")
 add_subdirectory("${PROJECT_SOURCE_DIR}/disassembler")
 add_subdirectory("${PROJECT_SOURCE_DIR}/assembler")
@@ -23,7 +24,6 @@ configure_file("${PROJECT_SOURCE_DIR}/inc/config.h.in"
                "${PROJECT_BINARY_DIR}/config.h")
 
 # Testing using CTest
-enable_testing()
 add_test(AssemblerDisassemblerInverse
          "${PROJECT_SOURCE_DIR}/tests/assembler-disassembler-cycle.sh"
          "${PROJECT_SOURCE_DIR}/")

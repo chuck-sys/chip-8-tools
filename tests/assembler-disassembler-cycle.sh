@@ -18,7 +18,7 @@ DASMBIN="${ROOTDIR}build/Chip8_Disassembler"
 
 # More sanity checking
 for f in ${ASMBIN} ${DASMBIN} ; do
-    if [[ -e $f ]]; then
+    if [[ ! -e $f ]]; then
         echo "$f does not exist. Exiting"
         exit -1
     fi
