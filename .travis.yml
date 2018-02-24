@@ -4,7 +4,7 @@ language: c++
 script:
     - mkdir build/
     - cd build/
-    - cmake ..
+    - cmake .. -DGCOV=1
     - make
     - CTEST_OUTPUT_ON_FAILURE=1 make test
     - cd ..
