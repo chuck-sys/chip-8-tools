@@ -25,7 +25,8 @@ for f in ${ASMBIN} ${DASMBIN} ; do
 done
 
 # Create a temporary directory to store everything
-TMPDIR="$(mktemp -d)/"
+TMPDIR="temp/"
+mkdir ${TMPDIR}
 
 # Delete later
 echo $(ls ${BINS})
