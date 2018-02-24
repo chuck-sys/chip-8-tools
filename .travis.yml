@@ -7,6 +7,7 @@ script:
     - cmake ..
     - make
     - CTEST_OUTPUT_ON_FAILURE=1 make test
+    - cd ..
     - ./scripts/gen-coverage.sh
 after_success:
     - bash <(curl -s https://codecov.io/bash)
