@@ -4,9 +4,13 @@ language: c++
 script:
     - mkdir build/
     - cd build/
-    - cmake -DCOVERAGE=1 ..
+    - cmake .. -DGCOV=1
     - make
-    - CTEST_OUTPUT_ON_FAILURE=1 make test
+    - CTEST_OUTPUT_ON_FAILURE=1 ctest
+    - cd ..
+    - ./scripts/gen-coverage.sh
+after_script:
+    - bash <(curl -s https://codecov.io/bash)
 before_install:
     - sudo apt-get install libopenal-dev
     - sudo apt-get install libjpeg-dev
@@ -15,7 +19,6 @@ before_install:
     - sudo apt-get install libfreetype6-dev
     - sudo apt-get install libvorbis-dev
     - sudo apt-get install libflac-dev
-    - pip install --user cpp-coveralls
 install:
     - git clone https://github.com/SFML/SFML.git
     - cd SFML
@@ -24,5 +27,4 @@ install:
     - make all
     - sudo make install
     - cd ../..
-after_success:
-    - coveralls --root .. -E ".*CMakeFiles.*"
+    - rm -rf SFML
