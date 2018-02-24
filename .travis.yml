@@ -22,3 +22,4 @@ install:
     - cmake ..
     - make all
     - sudo make install
+    - cd ../..
