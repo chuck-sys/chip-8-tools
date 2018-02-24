@@ -20,8 +20,8 @@ before_install:
     - sudo apt-get install libvorbis-dev
     - sudo apt-get install libflac-dev
 install:
-    - export CXX=g++-6
-    - export CC=gcc-6
+    - export CXX=g++-7
+    - export CC=gcc-7
     - git clone https://github.com/SFML/SFML.git
     - cd SFML
     - mkdir build/ && cd build/
@@ -35,4 +35,4 @@ addons:
         sources:
             - ubuntu-toolchain-r-test
         packages:
-            - g++-6
+            - g++-7
