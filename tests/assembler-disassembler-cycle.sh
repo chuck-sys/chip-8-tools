@@ -26,6 +26,8 @@ done
 
 # Create a temporary directory to store everything
 TMPDIR="$(mktemp -d)/"
+# Variable to update when any tests fail
+TESTFAIL=false
 
 for f in ${BINS} ; do
     filename="$(basename $f)"
@@ -38,14 +40,14 @@ for f in ${BINS} ; do
     ${DASMBIN} -c $f > ${tmpasm}
     if [[ $? -ne 0 ]]; then
         echo "Could not write to ${tmpasm}. Exiting"
-        exit -1
+        TESTFAIL=true
     fi
 
     # Assemble it
     ${ASMBIN} -o ${tmpbin} ${tmpasm}
     if [[ $? -ne 0 ]]; then
         echo "Could not write to ${tmpbin}. Exiting"
-        exit -1
+        TESTFAIL=true
     fi
 
     # Compare to the original
@@ -58,9 +60,16 @@ for f in ${BINS} ; do
         echo "Contents of $tmpbin"
         echo "==================="
         xxd $tmpbin
-        exit -1
+        TESTFAIL=true
     fi
 done
 
 # Delete everything in the temporary directory
 rm -rf $TMPDIR
+
+# Report on tests failing
+if [[ ${TESTFAIL} ]]; then
+    exit -1
+else
+    exit 0
+fi
