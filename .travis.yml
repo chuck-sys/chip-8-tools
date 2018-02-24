@@ -27,3 +27,4 @@ install:
     - make all
     - sudo make install
     - cd ../..
+    - rm -rf SFML
