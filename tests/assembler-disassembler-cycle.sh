@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Sanity checking
 if [[ $# -ne 1 ]]; then
