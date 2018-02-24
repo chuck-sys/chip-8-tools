@@ -15,18 +15,13 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libx11-dev
-                      - libxcb1-dev
-                      - libx11-xcb-dev
-                      - libxcb-randr0-dev
-                      - libxcb-image0-dev
-                      - libgl1-mesa-dev
-                      - libudev-dev
-                      - libfreetype6-dev
-                      - libjpeg-dev
                       - libopenal-dev
-                      - libflac-dev
+                      - libjpeg-dev
+                      - libudev-dev
+                      - libxrandr-dev
+                      - libfreetype6-dev
                       - libvorbis-dev
+                      - libflac-dev
                       - g++-7
           env:
             - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
