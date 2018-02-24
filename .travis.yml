@@ -7,6 +7,9 @@ script:
     - cmake ..
     - make
     - CTEST_OUTPUT_ON_FAILURE=1 make test
+    - ./scripts/gen-coverage.sh
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
 before_install:
     - sudo apt-get install libopenal-dev
     - sudo apt-get install libjpeg-dev

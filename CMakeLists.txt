@@ -9,7 +9,7 @@ set(Chip8_Tools_ADDR "https://github.com/cheukyin699/chip-8-tools/")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Os -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Os -Wall -fprofile-arcs -ftest-coverage")
 
 include_directories("${PROJECT_BINARY_DIR}")
 
