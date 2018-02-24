@@ -1,6 +1,7 @@
 # Chip-8 Toolset
 
 [![Travis](https://img.shields.io/travis/cheukyin699/chip-8-tools.svg)](https://travis-ci.org/cheukyin699/chip-8-tools)
+[![Codecov](https://img.shields.io/codecov/c/github/cheukyin699/chip-8-tools.svg)](https://codecov.io/gh/cheukyin699/chip-8-tools)
 
 This is a set of tools for emulating and looking at chip-8 files. It can
 currently emulate the following without major problems:

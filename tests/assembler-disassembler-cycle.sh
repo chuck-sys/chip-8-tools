@@ -25,8 +25,7 @@ for f in ${ASMBIN} ${DASMBIN} ; do
 done
 
 # Create a temporary directory to store everything
-TMPDIR="temp/"
-mkdir ${TMPDIR}
+TMPDIR="$(mktemp -d)/"
 
 for f in ${BINS} ; do
     filename="$(basename $f)"

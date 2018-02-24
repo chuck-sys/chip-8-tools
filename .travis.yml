@@ -6,7 +6,7 @@ script:
     - cd build/
     - cmake .. -DGCOV=1
     - make
-    - CTEST_OUTPUT_ON_FAILURE=1 ctest -V
+    - CTEST_OUTPUT_ON_FAILURE=1 ctest
     - cd ..
     - ./scripts/gen-coverage.sh
 after_script:
@@ -20,8 +20,6 @@ before_install:
     - sudo apt-get install libvorbis-dev
     - sudo apt-get install libflac-dev
 install:
-    #- export CXX=g++-7
-    #- export CC=gcc-7
     - git clone https://github.com/SFML/SFML.git
     - cd SFML
     - mkdir build/ && cd build/
@@ -30,9 +28,3 @@ install:
     - sudo make install
     - cd ../..
     - rm -rf SFML
-#   addons:
-#       apt:
-#           sources:
-#               - ubuntu-toolchain-r-test
-#           packages:
-#               - g++-7
