@@ -27,6 +27,9 @@ done
 # Create a temporary directory to store everything
 TMPDIR="$(mktemp -d)/"
 
+# Delete later
+echo $(ls ${BINS})
+
 for f in ${BINS} ; do
     filename="$(basename $f)"
     tmpasm="${TMPDIR}${filename}.asm"

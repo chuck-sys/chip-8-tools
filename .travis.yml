@@ -6,7 +6,7 @@ script:
     - cd build/
     - cmake .. -DGCOV=1
     - make
-    - CTEST_OUTPUT_ON_FAILURE=1 make test
+    - CTEST_OUTPUT_ON_FAILURE=1 ctest -V
     - cd ..
     - ./scripts/gen-coverage.sh
 after_success:
