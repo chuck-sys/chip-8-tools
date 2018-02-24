@@ -28,9 +28,6 @@ done
 TMPDIR="temp/"
 mkdir ${TMPDIR}
 
-# Delete later
-echo $(ls ${BINS})
-
 for f in ${BINS} ; do
     filename="$(basename $f)"
     tmpasm="${TMPDIR}${filename}.asm"
@@ -46,7 +43,7 @@ for f in ${BINS} ; do
     fi
 
     # Assemble it
-    ${ASMBIN} -o ${tmpbin} ${tmpasm}
+    valgrind ${ASMBIN} -o ${tmpbin} ${tmpasm}
     if [[ $? -ne 0 ]]; then
         echo "Could not write to ${tmpbin}. Exiting"
         exit -1
