@@ -30,6 +30,6 @@ configure_file("${PROJECT_SOURCE_DIR}/inc/config.h.in"
                "${PROJECT_BINARY_DIR}/config.h")
 
 # Testing using CTest
-add_test(AssemblerDisassemblerInverse
-         "${PROJECT_SOURCE_DIR}/tests/assembler-disassembler-cycle.sh"
-         "${PROJECT_SOURCE_DIR}/")
+add_test(NAME AssemblerDisassemblerInverse
+         COMMAND ${PROJECT_SOURCE_DIR}/tests/assembler-disassembler-cycle.sh 
+                 ${PROJECT_SOURCE_DIR}/)
