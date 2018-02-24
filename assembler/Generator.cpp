@@ -21,7 +21,7 @@
 #include "Generator.h"
 #include "Utilities.h"
 
-Generator::Generator(Parser *p) {
+Generator::Generator(Parser* p) {
     parser = p;
 
     passes = 2;
@@ -29,6 +29,11 @@ Generator::Generator(Parser *p) {
     ind = 0;
     lineno = 1;
     code = new unsigned char[CodeMaxSize];
+}
+
+Generator::~Generator() {
+    delete parser;
+    delete[] code;
 }
 
 inline bool Generator::isInMap(string k) {
@@ -871,9 +876,9 @@ void Generator::run() {
                 case Parser::reg_token:
                     break;
                 case Parser::hexnum_token:
-                    // In the case of any numbers, insert them
-                    // directly into the code
                     {
+                        // In the case of any numbers, insert them
+                        // directly into the code
                         int data = stringToHex(parser->Parsed);
                         code[ind] = data >> 8;
                         code[ind+1] = data & 0xff;
@@ -899,9 +904,9 @@ void Generator::run() {
 void Generator::output(string fn) {
     ofstream of(fn, ios::binary);
     if (of.is_open()) {
-        for (unsigned i=0; i<ind; i++) {
-            of << code[i];
-        }
+        of.write(reinterpret_cast<char*>(code), ind);
+    } else {
+        cerr << "Error writing to file '" << fn << "'" << endl;
     }
     of.close();
 }

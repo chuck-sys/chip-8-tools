@@ -71,23 +71,25 @@ Chip_8::Chip_8() {
     error_txt = "";
 }
 
+#define KEYMAP(Key, Map) key_lookup[Keyboard::Key] = Map
+
 void Chip_8::initKeyLookups() {
-    key_lookup[Keyboard::Num1]  = 0x1;
-    key_lookup[Keyboard::Num2]  = 0x2;
-    key_lookup[Keyboard::Num3]  = 0x3;
-    key_lookup[Keyboard::Num4]  = 0xc;
-    key_lookup[Keyboard::Q]     = 0x4;
-    key_lookup[Keyboard::W]     = 0x5;
-    key_lookup[Keyboard::E]     = 0x6;
-    key_lookup[Keyboard::R]     = 0xd;
-    key_lookup[Keyboard::A]     = 0x7;
-    key_lookup[Keyboard::S]     = 0x8;
-    key_lookup[Keyboard::D]     = 0x9;
-    key_lookup[Keyboard::F]     = 0xe;
-    key_lookup[Keyboard::Z]     = 0xa;
-    key_lookup[Keyboard::X]     = 0x0;
-    key_lookup[Keyboard::C]     = 0xb;
-    key_lookup[Keyboard::V]     = 0xf;
+    KEYMAP(Num1, 0x1);
+    KEYMAP(Num2, 0x2);
+    KEYMAP(Num3, 0x3);
+    KEYMAP(Num4, 0xc);
+    KEYMAP(Q, 0x4);
+    KEYMAP(W, 0x5);
+    KEYMAP(E, 0x6);
+    KEYMAP(R, 0xd);
+    KEYMAP(A, 0x7);
+    KEYMAP(S, 0x8);
+    KEYMAP(D, 0x9);
+    KEYMAP(F, 0xe);
+    KEYMAP(Z, 0xa);
+    KEYMAP(X, 0x0);
+    KEYMAP(C, 0xb);
+    KEYMAP(V, 0xf);
 }
 
 void Chip_8::loadHexSprites() {
@@ -242,13 +244,13 @@ bool Chip_8::loadGame(const string filename) {
     // Programs normally begin at
     // memory location 512 and above, so
     // load the file in there
-    ifstream f(filename, ios_base::binary | ios_base::in);
+    ifstream f(filename, ios::binary | ios::in);
     if (!f.is_open()) {
         // Error: No file found
         return false;
     }
 
-    char *buffer = reinterpret_cast<char*>(memory + 512);
+    char* buffer = reinterpret_cast<char*>(memory + 512);
 
     // Grab file size
     f.seekg(0, ios_base::end);
@@ -272,7 +274,7 @@ inline void Chip_8::updateTimers() {
     }
 }
 
-void Chip_8::initialize(const char *filename) {
+void Chip_8::initialize(const string filename) {
     bool success = loadGame(filename);
     if (!success) {
         // Set the error flag and error text
@@ -292,10 +294,12 @@ void Chip_8::handleKey(const Keyboard::Key key, bool pressed) {
             V[key_store] = key_lookup.at(key);
             pc += 2;
         }
-    } catch (std::out_of_range &e) {}
+    } catch (std::out_of_range &e) {
+        // When some other key is pressed, don't do anything
+    }
 }
 
-void Chip_8::drawDisplay(RenderWindow *w, Color bg, Color fg) {
+void Chip_8::drawDisplay(RenderWindow* w, Color bg, Color fg) {
     // Draws every single pixel
     for (int y = 0; y < Height; y++) {
         for (int x = 0; x < Width; x++) {
@@ -319,7 +323,7 @@ void Chip_8::emulateStep() {
     updateTimers();
 
     // Run an opcode
-    unsigned char *code = &memory[pc];
+    unsigned char* code = &memory[pc];
     unsigned char hinib = code[0] >> 4;
 
     // Some useful variables
@@ -343,6 +347,7 @@ void Chip_8::emulateStep() {
                     // 00EE: Returns from subroutine
                     // Tested: Good
                     if (--sp < 0) {
+                        sp = 0;
                         error = true;
                         error_txt = "Error: No subroutine to return from\n";
                     }

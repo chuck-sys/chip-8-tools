@@ -17,6 +17,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <memory>
 
 #include <config.h>
 
@@ -25,10 +26,25 @@
 
 using namespace std;
 
+void printHelp(char **argv) {
+    cout << "Chip 8 Assembler " VERSION " by Cheuk Yin Ng\n"
+        "Report all bugs to <" REP_ADDR ">.\n\n"
+        "Usage:\n"
+        << argv[0] << " [options] <source>\n\n"
+        "Options:\n"
+        "  -o <file>\n"
+        "  --out <file>             Place the output into <file>\n\n"
+        "  -h, --help               Shows this help text\n\n"
+        "  -1p, --one-pass          Makes 1 pass instead of 2, halving compilation\n"
+        "                           time, but only use this option if you know you\n"
+        "                           don't have any labels\n"
+        "                           that are used before they are declared.\n";
+}
+
 /* This assembler accepts only 1 source file */
 int main(int argc, char **argv) {
     if (argc == 1) {
-        cerr << "Error: Must have a filename\n";
+        printHelp(argv);
         return -1;
     }
 
@@ -53,17 +69,7 @@ int main(int argc, char **argv) {
         }
         else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             // Gives some help
-            cout << "Chip 8 Assembler " VERSION " by Cheuk Yin Ng\n"
-                "Report all bugs to <" REP_ADDR ">.\n\n"
-                "Usage:\n"
-                << argv[0] << " [options] <source>\n\n"
-                "Options:\n"
-                "  -o <file>\n"
-                "  --out <file>             Place the output into <file>\n\n"
-                "  -h, --help               Shows this help text\n\n"
-                "  -1p, --one-pass          Makes 1 pass instead of 2, halving compilation time, but\n"
-                "                           only use this option if you know you don't have any labels\n"
-                "                           that are used before they are declared.\n";
+            printHelp(argv);
             return 0;
         }
         else {
@@ -79,7 +85,7 @@ int main(int argc, char **argv) {
     }
 
     // Start parsing and generating the code
-    Parser *parser = new Parser(source_fn);
+    shared_ptr<Parser> parser(new Parser(source_fn));
 
     // Error checking before the storm
     if (parser->ErrorMesg != "") {
@@ -87,7 +93,7 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    Generator *generator = new Generator(parser);
+    unique_ptr<Generator> generator(new Generator(parser.get()));
 
     // Sets the arguments
     if (one_pass) {

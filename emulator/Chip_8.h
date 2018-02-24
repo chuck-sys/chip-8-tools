@@ -32,19 +32,19 @@ class Chip_8 {
         static const int Height = 32;
         static const int Scale = 8;
 
-        unsigned char *memory;          // 4K memory
-        unsigned char *display;         // Chip 8 graphics (B&W) 64x32px
+        unsigned char* memory;          // 4K memory
+        unsigned char* display;         // Chip 8 graphics (B&W) 64x32px
         unsigned char V[16];            // 16 registers (V0 to VF)
         unsigned char key_store;        // Where do we store the key?
         unsigned short I;               // 16-bit address register
         unsigned short pc;              // 16-bit program counter
         unsigned short stack[16];       // 16 levels of stack
-        unsigned short sp;              // Stack pointer
+        short sp;                       // Stack pointer
         bool keys[16];                  // Hex based keypad with 16 keys
         bool waitForKey;
 
         /* Loads the game file into memory */
-        bool loadGame(const string);
+        bool loadGame(const string filename);
 
         /* Loads the hex sprites (0-F) into memory */
         void loadHexSprites();
@@ -69,19 +69,19 @@ class Chip_8 {
         void popRegisters(unsigned char x);
 
     public:
+        Chip_8();
+        ~Chip_8();
+
         unsigned dt;                // Delay timer register
         unsigned st;                // Sound timer register
         bool drawf;                 // Do we need to draw anything?
         bool error;
         string error_txt;
 
-        Chip_8();
-        ~Chip_8();
-
-        void initialize(const char *filename);
+        void initialize(const string filename);
         void handleKey(const Keyboard::Key key, bool pressed);
         void emulateStep();
-        void drawDisplay(RenderWindow *w, Color bg, Color fg);
+        void drawDisplay(RenderWindow* w, Color bg, Color fg);
 };
 
 static unordered_map<int, int> key_lookup = unordered_map<int, int>();

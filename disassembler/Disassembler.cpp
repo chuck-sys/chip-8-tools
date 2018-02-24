@@ -18,14 +18,15 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <fstream>
 
 #include <config.h>
 
 using namespace std;
 
-void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
+void emulateStep(unsigned char* buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
     // Run an opcode
-    unsigned char *code = &buffer[pc];
+    unsigned char* code = &buffer[pc];
     unsigned char hinib = code[0] >> 4;
 
     // Some useful variables
@@ -41,19 +42,23 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
 
     switch (hinib) {
         case 0x0:
-            switch (nn) {
-                case 0xe0:
-                    // 00E0: Clears the screen
-                    printf("CLS");
-                    break;
-                case 0xee:
-                    // 00EE: Returns from subroutine
-                    printf("RET");
-                    break;
-                default:
-                    // If it is a piece of data, insert directly into output
-                    printf("%02x%02x", code[0], code[1]);
-                    break;
+            if (code[0] != 0) {
+                printf("%02x%02x", code[0], code[1]);
+            } else {
+                switch (nn) {
+                    case 0xe0:
+                        // 00E0: Clears the screen
+                        printf("CLS");
+                        break;
+                    case 0xee:
+                        // 00EE: Returns from subroutine
+                        printf("RET");
+                        break;
+                    default:
+                        // If it is a piece of data, insert directly into output
+                        printf("%02x%02x", code[0], code[1]);
+                        break;
+                }
             }
             break;
         case 0x1:
@@ -179,7 +184,7 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
             printf("DRW\tV%x, V%x, %02x", x, y, n);
             break;
         case 0xe:
-            switch (code[1]) {
+            switch ((unsigned char) code[1]) {
                 case 0x9e:
                     // Skip next instruction if key[VX] is pressed
                     // SKP (Skip if Key Pressed)
@@ -257,32 +262,35 @@ void emulateStep(unsigned char *buffer, unsigned pc, bool clean, unsigned short 
     printf("\n");
 }
 
+void printHelp(char **argv) {
+    cout << "Chip 8 Disassembler " VERSION " by Cheuk Yin Ng\n"
+        "Report all bugs to <" REP_ADDR ">.\n\n"
+        "Usage:\n"
+        << argv[0] << " [options] <filename>\n\n"
+        "Options:\n"
+        "  -c, --clean          Does not show the address of where the commands\n"
+        "                       are in memory. Only assembler is outputted.\n\n"
+        "  -n, --no-padding     Does not add 0x200 to addresses\n\n"
+        "  -h, --help           Shows this helpful message\n";
+}
+
 int main(int argc, char **argv) {
     // Arguments checking
     if (argc == 1) {
-        cerr << "Error: Invalid number of arguments.\n"
-            << "Usage: " << argv[0] << " <program_file>\n";
+        printHelp(argv);
         return -1;
     }
     bool clean = false;
     bool padded = true;
     int src_pos = 1;
-    for (int i=0; i<argc; i++) {
+    for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--clean") == 0)
             clean = true;
         else if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--no-padding") == 0)
             padded = false;
         else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             // Display help
-            cout << "Chip 8 Disassembler " VERSION " by Cheuk Yin Ng\n"
-                "Report all bugs to <" REP_ADDR ">.\n\n"
-                "Usage:\n"
-                << argv[0] << " [options] <filename>\n\n"
-                "Options:\n"
-                "  -c, --clean          Does not show the address of where the commands\n"
-                "                       are in memory. Only assembler is outputted.\n\n"
-                "  -n, --no-padding     Does not add 0x200 to addresses\n\n"
-                "  -h, --help           Shows this helpful message\n";
+            printHelp(argv);
             return 0;
         }
         else {
@@ -294,35 +302,34 @@ int main(int argc, char **argv) {
     // Programs normally begin at
     // memory location 512 and above, so
     // load the file in there
-    FILE *f = fopen(argv[src_pos], "rb");
+    ifstream f(argv[src_pos], ios::binary | ios::in);
 
-    if (f == NULL) {
+    if (f.is_open()) {
+        // Grab file size
+        f.seekg(0, ios_base::end);
+        auto file_size = f.tellg();
+        f.seekg(0, ios_base::beg);
+
+        unsigned char* buffer = new unsigned char[file_size];
+
+        // Read file to buffer and close
+        f.read(reinterpret_cast<char*>(buffer), file_size);
+        f.close();
+
+        unsigned short offset = 0;
+        if (padded) {
+            offset = 0x200;
+        }
+
+        for (int pc = 0; pc < file_size; pc += 2) {
+            emulateStep(buffer, pc, clean, offset);
+        }
+
+        delete[] buffer;
+    } else {
         // Error: No file found
         cerr << "Error: File `" << argv[src_pos] << "' not found\n";
         return -1;
-    }
-
-    // Grab file size
-    fseek(f, 0, SEEK_END);
-    int file_size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    unsigned char *buffer = new unsigned char[file_size];
-    for (int i = 0; i < file_size; i++)
-        buffer[i] = 0;
-
-    // Read file to buffer
-    fread(buffer, 1, file_size, f);
-
-    fclose(f);
-
-    unsigned short offset = 0;
-    if (padded) {
-        offset = 0x200;
-    }
-
-    for (int pc = 0; pc < file_size; pc += 2) {
-        emulateStep(buffer, pc, clean, offset);
     }
 
     return 0;

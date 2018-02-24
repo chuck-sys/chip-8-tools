@@ -1,0 +1,25 @@
+notifications:
+    email: false
+language: c++
+script:
+    - mkdir build/
+    - cd build/
+    - cmake ..
+    - make
+    - CTEST_OUTPUT_ON_FAILURE=1 make test
+before_install:
+    - sudo apt-get install libopenal-dev
+    - sudo apt-get install libjpeg-dev
+    - sudo apt-get install libudev-dev
+    - sudo apt-get install libxrandr-dev
+    - sudo apt-get install libfreetype6-dev
+    - sudo apt-get install libvorbis-dev
+    - sudo apt-get install libflac-dev
+install:
+    - git clone https://github.com/SFML/SFML.git
+    - cd SFML
+    - mkdir build/ && cd build/
+    - cmake ..
+    - make all
+    - sudo make install
+    - cd ../..

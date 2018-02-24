@@ -39,7 +39,7 @@ const double Increment = 440. / 44100;
 
 Color bg = Color::Black, fg = Color::White;
 
-void printHelp(char **argv) {
+void printHelp(char** argv) {
     cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
         "Report all bugs to <" REP_ADDR ">.\n\n"
         "Usage:\n"
@@ -57,17 +57,16 @@ void printHelp(char **argv) {
 #define PARSECOLOR(c) if (++i < argc) {c = Color(atoi(argv[i]));}\
                       else {cerr << "Expected an integer.\n";return -1;}
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     // Arguments checking
     if (argc == 1) {
-        cerr << "Error: Invalid number of arguments.\n"
-            << "Usage: " << argv[0] << " <program_file>\n";
+        printHelp(argv);
         return -1;
     }
 
     // Arguments parsing
     int ind = 1;
-    unsigned fps = 60;
+    unsigned fps = 30;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             printHelp(argv);
@@ -99,7 +98,7 @@ int main(int argc, char **argv) {
     }
 
     unique_ptr<Chip_8> c8cpu(new Chip_8());
-    shared_ptr<RenderWindow> window(new RenderWindow(VideoMode(800, 500),
+    unique_ptr<RenderWindow> window(new RenderWindow(VideoMode(800, 500),
                                                      argv[ind],
                                                      Style::Close));
     Clock c;
