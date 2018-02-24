@@ -15,10 +15,29 @@ matrix:
                   sources:
                       - ubuntu-toolchain-r-test
                   packages:
-                      - libsfml-dev
+                      - libx11-dev
+                      - libxcb1-dev
+                      - libx11-xcb-dev
+                      - libxcb-randr0-dev
+                      - libxcb-image0-dev
+                      - libgl1-mesa-dev
+                      - libudev-dev
+                      - libfreetype6-dev
+                      - libjpeg-dev
+                      - libopenal-dev
+                      - libflac-dev
+                      - libvorbis-dev
                       - g++-7
           env:
             - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
 before_install:
     - eval "${MATRIX_EVAL}"
+
+install:
+    - git clone https://github.com/SFML/SFML.git
+    - cd SFML
+    - mkdir build/
+    - cmake ..
+    - make all
+    - sudo make install

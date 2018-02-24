@@ -16,6 +16,14 @@ ASMBIN="${ROOTDIR}build/Chip8_Assembler"
 # Disassembler binary
 DASMBIN="${ROOTDIR}build/Chip8_Disassembler"
 
+# More sanity checking
+for f in ${ASMBIN} ${DASMBIN} ; do
+    if [[ -e $f ]]; then
+        echo "$f does not exist. Exiting"
+        exit -1
+    fi
+done
+
 # Create a temporary directory to store everything
 TMPDIR="$(mktemp -d)/"
 
