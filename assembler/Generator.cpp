@@ -32,7 +32,6 @@ Generator::Generator(Parser* p) {
 }
 
 Generator::~Generator() {
-    delete parser;
     delete[] code;
 }
 

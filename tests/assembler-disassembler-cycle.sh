@@ -43,7 +43,7 @@ for f in ${BINS} ; do
     fi
 
     # Assemble it
-    valgrind ${ASMBIN} -o ${tmpbin} ${tmpasm}
+    ${ASMBIN} -o ${tmpbin} ${tmpasm}
     if [[ $? -ne 0 ]]; then
         echo "Could not write to ${tmpbin}. Exiting"
         exit -1
