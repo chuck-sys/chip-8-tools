@@ -19,3 +19,4 @@ matrix:
 
 before_install:
     - eval "${MATRIX_EVAL}"
+    - sudo apt-get install libsfml-dev
