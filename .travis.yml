@@ -37,7 +37,7 @@ before_install:
 install:
     - git clone https://github.com/SFML/SFML.git
     - cd SFML
-    - mkdir build/
+    - mkdir build/ && cd build/
     - cmake ..
     - make all
     - sudo make install
