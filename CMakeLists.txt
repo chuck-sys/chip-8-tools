@@ -8,7 +8,6 @@ set(Chip8_Tools_VERSION_PATCH 1)
 set(Chip8_Tools_ADDR "https://github.com/cheukyin699/chip-8-tools/")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-set(COVERAGE OFF CACHE BOOL "Coverage")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Os -Wall")
 

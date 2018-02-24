@@ -4,7 +4,7 @@ language: c++
 script:
     - mkdir build/
     - cd build/
-    - cmake -DCOVERAGE=1 ..
+    - cmake ..
     - make
     - CTEST_OUTPUT_ON_FAILURE=1 make test
 before_install:
@@ -15,7 +15,6 @@ before_install:
     - sudo apt-get install libfreetype6-dev
     - sudo apt-get install libvorbis-dev
     - sudo apt-get install libflac-dev
-    - pip install --user cpp-coveralls
 install:
     - git clone https://github.com/SFML/SFML.git
     - cd SFML
@@ -24,5 +23,3 @@ install:
     - make all
     - sudo make install
     - cd ../..
-after_success:
-    - coveralls --root .. -E ".*CMakeFiles.*"
