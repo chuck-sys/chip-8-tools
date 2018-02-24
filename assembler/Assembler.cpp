@@ -106,6 +106,7 @@ int main(int argc, char **argv) {
     }
     else {
         cerr << "Cannot generate binary - some errors exist.\n";
+        return -1;
     }
 
     return 0;

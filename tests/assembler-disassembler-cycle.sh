@@ -36,8 +36,17 @@ for f in ${BINS} ; do
 
     # Disassemle it
     ${DASMBIN} -c $f > ${tmpasm}
+    if [[ $? -ne 0 ]]; then
+        echo "Could not write to ${tmpasm}. Exiting"
+        exit -1
+    fi
+
     # Assemble it
     ${ASMBIN} -o ${tmpbin} ${tmpasm}
+    if [[ $? -ne 0 ]]; then
+        echo "Could not write to ${tmpbin}. Exiting"
+        exit -1
+    fi
 
     # Compare to the original
     cmp -l $f ${tmpbin}
