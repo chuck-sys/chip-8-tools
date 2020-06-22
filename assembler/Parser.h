@@ -20,6 +20,7 @@
 
 #include <fstream>
 #include <string>
+#include <exception>
 
 using namespace std;
 
@@ -56,6 +57,18 @@ public:
     token getNextToken();
     void setPosition(int);
     int getPosition();
+};
+
+class ParseException : public exception {
+private:
+	string msg;
+
+public:
+	ParseException(string huh) : msg(huh) {};
+
+	virtual const char* what() const throw() {
+		return msg.c_str();
+	}
 };
 
 #endif

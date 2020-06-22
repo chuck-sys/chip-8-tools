@@ -20,7 +20,9 @@
 
 #include <map>
 #include <string>
+#include <exception>
 
+#include "CmdParser.h"
 #include "Parser.h"
 
 using namespace std;
@@ -49,7 +51,7 @@ public:
     int passes;
     bool error;
 
-    Generator(Parser*);
+    Generator(AssemblerCommandParser*);
     ~Generator();
 
     /* Pass over the code n times
@@ -69,6 +71,16 @@ public:
      * Outputs code to specified output file
      */
     void output(string);
+};
+
+class GeneratorException : public exception {
+private:
+	string msg;
+
+public:
+	GeneratorException(string huh): msg(huh) {};
+
+	virtual const char* what() const throw() {return msg.c_str();}
 };
 
 #endif

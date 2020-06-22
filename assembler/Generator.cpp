@@ -19,12 +19,14 @@
 #include <iostream>
 
 #include "Generator.h"
+#include "CmdParser.h"
+#include "Parser.h"
 #include "Utilities.h"
 
-Generator::Generator(Parser* p) {
-    parser = p;
+Generator::Generator(AssemblerCommandParser* cmdParser) {
+    parser = new Parser(cmdParser->getSourceFilename());
 
-    passes = 2;
+    passes = cmdParser->isOnePass() ? 1 : 2;
     error = false;
     ind = 0;
     lineno = 1;
@@ -35,7 +37,7 @@ Generator::~Generator() {
     delete[] code;
 }
 
-inline bool Generator::isInMap(string k) {
+bool Generator::isInMap(string k) {
     return (symbols_map.find(k) != symbols_map.end());
 }
 
@@ -44,9 +46,8 @@ string Generator::lnToString() {
     return ret;
 }
 
-inline void Generator::handlePError() {
-    cerr << lnToString() << parser->ErrorMesg << endl;
-    error = true;
+void Generator::handlePError() {
+	throw GeneratorException(lnToString() + parser->ErrorMesg);
 }
 
 void Generator::genForOpcode() {

@@ -25,8 +25,7 @@ Parser::Parser(string in_fn) {
     infile.open(in_fn, ios::binary);
 
     if (infile.bad()) {
-        ErrorMesg = "Fatal Error: File does not exist!!";
-        return;
+		throw ParseException("File does not exist!!");
     }
 
     current = infile.get();
