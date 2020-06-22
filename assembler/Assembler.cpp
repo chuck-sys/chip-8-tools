@@ -37,11 +37,7 @@ int main(int argc, char **argv) {
 		unique_ptr<Generator> generator(new Generator(cmdParser.get()));
 
 		generator->run();
-		if (!generator->error) {
-			generator->output(cmdParser->getBinaryFilename());
-		} else {
-			cerr << "Cannot generate binary - some errors exist.\n";
-		}
+		generator->output(cmdParser->getBinaryFilename());
 	} catch (AssemblerCommandException& e) {
 		if (e.isBadError()) {
 			cerr << "Command line error: " << e.what() << endl;
