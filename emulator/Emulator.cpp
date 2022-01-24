@@ -24,8 +24,6 @@
 #include <string>
 #include <memory>
 
-#include <config.h>
-
 #include "Chip_8.h"
 
 using namespace std;
@@ -40,8 +38,7 @@ const double Increment = 440. / 44100;
 Color bg = Color::Black, fg = Color::White;
 
 void printHelp(char** argv) {
-    cout << "Chip 8 Emulator " VERSION " by Cheuk Yin Ng\n"
-        "Report all bugs to <" REP_ADDR ">.\n\n"
+    cout <<
         "Usage:\n"
         << argv[0] << " [options] <chip8_bin>\n\n"
         "Options:\n"

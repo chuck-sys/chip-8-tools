@@ -20,7 +20,6 @@
 #include <exception>
 #include <iostream>
 
-#include <config.h>
 #include "CmdParser.h"
 
 AssemblerCommandParser::AssemblerCommandParser(int numArgs, char** argv) {
@@ -76,9 +75,7 @@ void AssemblerCommandException::throwError(std::string huh) {
 }
 
 void AssemblerCommandParser::printHelp() {
-	std::cout << "Chip 8 Assembler " VERSION " by Cheuk Yin Ng\n"
-        "Report all bugs to <" REP_ADDR ">.\n\n"
-        "Usage:\n"
+	std::cout << "Usage:\n"
         "./assembler [options] <source>\n\n"
         "Options:\n"
         "  -o <file>,\n"

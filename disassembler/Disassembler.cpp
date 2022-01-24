@@ -20,8 +20,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <config.h>
-
 using namespace std;
 
 void emulateStep(unsigned char* buffer, unsigned pc, bool clean, unsigned short offset=0x200) {
@@ -263,9 +261,7 @@ void emulateStep(unsigned char* buffer, unsigned pc, bool clean, unsigned short 
 }
 
 void printHelp(char **argv) {
-    cout << "Chip 8 Disassembler " VERSION " by Cheuk Yin Ng\n"
-        "Report all bugs to <" REP_ADDR ">.\n\n"
-        "Usage:\n"
+    cout << "Usage:\n"
         << argv[0] << " [options] <filename>\n\n"
         "Options:\n"
         "  -c, --clean          Does not show the address of where the commands\n"

@@ -19,8 +19,6 @@
 #include <iostream>
 #include <memory>
 
-#include <config.h>
-
 #include "Parser.h"
 #include "Generator.h"
 #include "CmdParser.h"
