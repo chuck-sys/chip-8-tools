@@ -21,43 +21,12 @@
 #include <string>
 #include <exception>
 
-class AssemblerCommandParser {
-private:
-	std::string sourceFilename;
-	std::string binaryFilename;
-	bool doOnePass;
-
-public:
-	AssemblerCommandParser(int args, char** argv);
-	std::string getSourceFilename() const {return sourceFilename;}
-	std::string getBinaryFilename() const {return binaryFilename;}
-	bool isOnePass() const {return doOnePass;}
-
-	void printHelp();
+struct asm_options_t {
+	std::string src;
+	std::string out;
 };
 
-enum AssemblerCommandExceptionType {
-	NEED_HELP,
-	UNRECOVERABLE_ERROR
-};
-
-class AssemblerCommandException : public std::exception {
-private:
-	AssemblerCommandExceptionType type;
-	std::string issue;
-
-public:
-	AssemblerCommandException(
-			AssemblerCommandExceptionType t,
-			std::string huh);
-
-	static void throwHelp();
-	static void throwError(std::string huh);
-
-	virtual const char* what() const throw();
-
-	bool isBadError() const {return type == UNRECOVERABLE_ERROR;}
-	bool isNeedHelp() const {return type == NEED_HELP;}
-};
+asm_options_t* parseOptions(int, const char**);
+void showHelp(const char**);
 
 #endif

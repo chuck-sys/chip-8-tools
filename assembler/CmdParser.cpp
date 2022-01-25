@@ -22,71 +22,46 @@
 
 #include "CmdParser.h"
 
-AssemblerCommandParser::AssemblerCommandParser(int numArgs, char** argv) {
-	if (numArgs == 1) {
-		AssemblerCommandException::throwHelp();
+asm_options_t* parseOptions(int argc, const char** argv) {
+    auto ret = new asm_options_t;
+    ret->out = "a.out";
+
+	if (argc == 1) {
+        goto needhelp;
 	}
 
-	binaryFilename = "a.out";
-	doOnePass = false;
-
-    for (int i = 1; i < numArgs; i++) {
+    for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--out") == 0) {
-            if (++i < numArgs) {
-                binaryFilename = std::string(argv[i]);
+            if (++i < argc) {
+                ret->out = std::string(argv[i]);
+            } else {
+                goto needhelp;
             }
-            else {
-				AssemblerCommandException::throwError("Must have a filename after `-o'");
-            }
-        }
-        else if (strcmp(argv[i], "-1p") == 0 || strcmp(argv[i], "--one-pass") == 0) {
-            doOnePass = true;
-        }
-        else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-			AssemblerCommandException::throwHelp();
-        }
-        else {
-            sourceFilename = std::string(argv[i]);
+        } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            goto needhelp;
+        } else {
+            ret->src = std::string(argv[i]);
         }
     }
 
-	if (sourceFilename.empty()) {
-		AssemblerCommandException::throwError("Must have a source file");
+	if (ret->src.empty()) {
+        goto needhelp;
 	}
+
+    return ret;
+
+needhelp:
+    showHelp(argv);
+    delete ret;
+    return nullptr;
 }
 
-AssemblerCommandException::AssemblerCommandException(
-		AssemblerCommandExceptionType t,
-		std::string huh) {
-	type = t;
-	issue = huh;
-}
-
-void AssemblerCommandException::throwHelp() {
-	throw AssemblerCommandException(
-			NEED_HELP,
-			"");
-}
-
-void AssemblerCommandException::throwError(std::string huh) {
-	throw AssemblerCommandException(
-			UNRECOVERABLE_ERROR,
-			huh);
-}
-
-void AssemblerCommandParser::printHelp() {
-	std::cout << "Usage:\n"
-        "./assembler [options] <source>\n\n"
+void showHelp(const char** argv) {
+	std::cout << "Usage:\n" << argv[0] <<
+        " [options] <source>\n\n"
+        "If you give it multiple source files, it only selects the latest one.\n\n"
         "Options:\n"
         "  -o <file>,\n"
         "  --out <file>             Place the output into <file>\n\n"
-        "  -h, --help               Shows this help text\n\n"
-        "  -1p, --one-pass          Makes 1 pass instead of 2, halving compilation\n"
-        "                           time, but only use this option if you know you\n"
-        "                           don't have any labels\n"
-        "                           that are used before they are declared.\n";
-}
-
-const char* AssemblerCommandException::what() const throw() {
-	return issue.c_str();
+        "  -h, --help               Shows this help text\n";
 }

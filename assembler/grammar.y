@@ -55,7 +55,13 @@
 
     #define LABEL_INSTR(op, id) { \
         gen.insertInstruction( \
-            instruction_t{op, {0, 0}, {0, 0}, {0, 0}, id} \
+            instruction_t{op, {token::IDENTIFIER, 0}, {0, 0}, {0, 0}, id} \
+        ); \
+    }
+
+    #define LIT_INSTR(op, lit) { \
+        gen.insertInstruction( \
+            instruction_t{op, {token::LITERAL, lit}, {0, 0}, {0, 0}, EMPTYSTR} \
         ); \
     }
 
@@ -68,6 +74,12 @@
     #define SPREG_LIT_INSTR(op, spreg, lit) { \
         gen.insertInstruction( \
             instruction_t{op, {spreg, 0}, {token::LITERAL, lit}, {0, 0}, EMPTYSTR} \
+        ); \
+    }
+
+    #define SPREG_LABEL_INSTR(op, spreg, label) { \
+        gen.insertInstruction( \
+            instruction_t{op, {spreg, 0}, {token::IDENTIFIER, 0}, {0, 0}, label} \
         ); \
     }
 
@@ -184,8 +196,11 @@ item
     : CLS                           { SINGLE_INSTR(token::CLS); }
     | RET                           { SINGLE_INSTR(token::RET); }
     | JP IDENTIFIER                 { LABEL_INSTR(token::JP, $2); }
+    | JP literal                    { LIT_INSTR(token::JP, $2); }
     | JP register COMMA IDENTIFIER  { REG_LABEL_INSTR(token::JP, $2, $4); }
+    | JP register COMMA literal     { REG_LIT_INSTR(token::JP, $2, $4); }
     | CALL IDENTIFIER               { LABEL_INSTR(token::CALL, $2); }
+    | CALL literal                  { LIT_INSTR(token::JP, $2); }
     | SE register COMMA literal     { REG_LIT_INSTR(token::SE, $2, $4); }
     | SE register COMMA register    { REG_REG_INSTR(token::SE, $2, $4); }
     | SNE register COMMA literal    { REG_LIT_INSTR(token::SNE, $2, $4); }
@@ -193,6 +208,7 @@ item
     | LD register COMMA literal     { REG_LIT_INSTR(token::LD, $2, $4); }
     | LD register COMMA register    { REG_REG_INSTR(token::LD, $2, $4); }
     | LD IREG COMMA literal         { SPREG_LIT_INSTR(token::LD, token::IREG, $4); }
+    | LD IREG COMMA IDENTIFIER      { SPREG_LABEL_INSTR(token::LD, token::IREG, $4); }
     | LD register COMMA DT          { REG_SPREG_INSTR(token::LD, $2, token::DT); }
     | LD register COMMA K           { REG_SPREG_INSTR(token::LD, $2, token::K); }
     | LD DT COMMA register          { SPREG_REG_INSTR(token::LD, token::DT, $4); }

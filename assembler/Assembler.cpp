@@ -25,24 +25,18 @@
 using namespace std;
 
 /* This assembler accepts only 1 source file */
-int main(int argc, char **argv) {
-	unique_ptr<AssemblerCommandParser> cmdParser;
+int main(int argc, const char **argv) {
+    auto options = parseOptions(argc, argv);
+    if (options == nullptr) {
+        delete options;
+        return 1;
+    }
 
-	try {
-		cmdParser = unique_ptr<AssemblerCommandParser>(new AssemblerCommandParser(argc, argv));
+    unique_ptr<CodeGenerator> generator(new CodeGenerator());
 
-		unique_ptr<CodeGenerator> generator(new CodeGenerator());
+    generator->parse(options->src);
+    generator->writeCodeToFile(options->out);
 
-		generator->parse(cmdParser->getSourceFilename());
-		generator->writeCodeToFile(cmdParser->getBinaryFilename());
-	} catch (AssemblerCommandException& e) {
-		if (e.isBadError()) {
-			cerr << "Command line error: " << e.what() << endl;
-		}
-		if (e.isNeedHelp()) {
-			cmdParser->printHelp();
-		}
-	}
-
+    delete options;
 	return 0;
 }

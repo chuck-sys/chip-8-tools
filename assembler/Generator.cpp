@@ -78,6 +78,11 @@ void CodeGenerator::toBytecode(instruction_t instr, char* output) {
     output[0] = op | addr >> 8; \
     output[1] = addr & 0xff; \
 }
+#define NNN2(op) { \
+    unsigned addr = instr.arg2.literal; \
+    output[0] = op | addr >> 8; \
+    output[1] = addr & 0xff; \
+}
 #define XNN(op) { \
     output[0] = op | (instr.arg1.reg & 0xf); \
     output[1] = instr.arg2.literal & 0xff; \
@@ -109,10 +114,20 @@ void CodeGenerator::toBytecode(instruction_t instr, char* output) {
             output[1] = 0xee;
             break;
         case token::JP:
-            SYMNNN(instr.arg1.token == token::REGISTER? 0xb0 : 0x10);
+            if (instr.arg1.token == token::IDENTIFIER) {
+                SYMNNN(0x10);
+            } else if (instr.arg1.token == token::REGISTER) {
+                SYMNNN(0xb0);
+            } else if (instr.arg1.token == token::LITERAL) {
+                NNN(0x10);
+            }
             break;
         case token::CALL:
-            SYMNNN(0x20);
+            if (instr.arg1.token == token::IDENTIFIER) {
+                SYMNNN(0x20);
+            } else if (instr.arg1.token == token::LITERAL) {
+                NNN(0x20);
+            }
             break;
         case token::SE:
             if (instr.arg2.token == token::LITERAL) {
@@ -140,7 +155,11 @@ void CodeGenerator::toBytecode(instruction_t instr, char* output) {
                     XCC(0xf0, 0x0a);
                 }
             } else if (instr.arg1.token == token::IREG) {
-                NNN(0xa0);
+                if (instr.arg2.token == token::LITERAL) {
+                    NNN2(0xa0);
+                } else if (instr.arg2.token == token::IDENTIFIER) {
+                    SYMNNN(0xa0);
+                }
             } else if (instr.arg1.token == token::DT) {
                 XCC(0xf0, 0x15);
             } else if (instr.arg1.token == token::ST) {

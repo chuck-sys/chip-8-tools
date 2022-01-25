@@ -6,13 +6,13 @@ Mnemonic | Opcode | Usage | Description
 ---------|--------|-------|------------
 CLS | 00E0 | `CLS` | Clears the entire screen; Sets the draw flag
 RET | 00EE | `RET` | Returns from subroutine
-JP | 1nnn | `JP 222` | Jumps to address nnn
-CALL | 2nnn | `CALL 232` | Calls the subroutine at address nnn
-SE | 3xnn | `SE V0, a0` | Skips the next instruction if V[x] == nn
-SNE | 4xnn | `SNE V0, a0` | Skips the next instruction if V[x] == nn
+JP | 1nnn | `JP start` | Jumps to address nnn
+CALL | 2nnn | `CALL foo` | Calls the subroutine at address nnn
+SE | 3xnn | `SE V0, 0xa0` | Skips the next instruction if V[x] == nn
+SNE | 4xnn | `SNE V0, 0xa0` | Skips the next instruction if V[x] == nn
 SE | 5xy0 | `SE V0, Va` | Skips the next instruction if V[x] == V[y]
-LD | 6xnn | `LD V0, 2a` | Sets the value of V[x] to nn
-ADD | 7xnn | `ADD V0, 12` | Adds nn to the value of V[x] and stores it in V[x]
+LD | 6xnn | `LD V0, 0x2a` | Sets the value of V[x] to nn
+ADD | 7xnn | `ADD V0, 0x12` | Adds nn to the value of V[x] and stores it in V[x]
 LD | 8xy0 | `LD V0, V1` | Sets the value of V[x] to the value of V[y]
 OR | 8xy1 | `OR V0, V1` | Sets the value of V[x] to V[x] _OR_ V[y]
 AND | 8xy2 | `AND V0, V1` | Sets the value of V[x] to V[x] _AND_ V[y]
@@ -23,10 +23,10 @@ SHR | 8x06 | `SHR V0` | Saves LSB of V[x] in V[0xf]; Shifts V[x] to the right by
 SUBN | 8xy7 | `SUBN V0, V1` | Sets V[x] to V[y] - V[x]; Set V[f] = 0 if there is borrow and vice versa
 SHL | 8x0e | `SHL V0` | Saves MSB of V[x] in V[0xf]; Shifts V[x] to the left by 1 bit
 SNE | 9xy0 | `SNE V0, V1` | Skips the next instruction if V[x] != V[y]
-LD | Annn | `LD I, 29a` | Sets index register I to nnn
-JP | Bnnn | `JP V0, 29b` | Jumps to address nnn+V[0]
-RND | Cxnn | `RND V0, 1` | Sets V[x] to a random number masked by nn
-DRW | Dxyn | `DRW V0, V1, 2` | Reads n bytes from memory, and displays them at (V[x], V[y]); Sets V[0xf] to whether any pixel collided (collided? 1:0)
+LD | Annn | `LD I, 0x29a` | Sets index register I to nnn
+JP | Bnnn | `JP V0, flist` | Jumps to address nnn+V[0]
+RND | Cxnn | `RND V0, 0x1` | Sets V[x] to a random number masked by nn
+DRW | Dxyn | `DRW V0, V1, 0x2` | Reads n bytes from memory, and displays them at (V[x], V[y]); Sets V[0xf] to whether any pixel collided (collided? 1:0)
 SKP | Ex9E | `SKP V0` | Skips the next instruction if key[V[x]] is pressed
 SKNP | ExA1 | `SKNP V0` | Skips the next instruction if key[V[x]] is _NOT_ pressed
 LD | Fx07 | `LD V0, DT` | Sets V[x] to the value in delay timer DT
@@ -43,22 +43,35 @@ POP | Fx65 | `POP Vf` | Pops all registers from V[0] to V[x] inclusive from loca
 
 ```asm
 ; Infinite loop
-JP 200
+start:
+begin: JP start
 ```
 
 Comments are one-liners starting with `;` character.
 
 ```asm
-LD I, sprite1
-DRW V0, V1, 2
+LD I, sprite1       ; the same thing
+LD I, 0x206         ; the same thing
+DRW V0, V1, 0x2
 
 sprite1:
 ; To insert data, just have the number there;
 ; automatic insertion will take place
-000f
+0x000f 0x0000 0x9
+; the above creates 6 bytes of data
 ```
 
-For convenience's sake, all addresses can be labeled.
+Only mnemonics that are NNN can have the address replaced with a label. This includes the following:
+
+```asm
+; Obviously
+start: JP start
+call start
+LD I, start
+JP V0, start
+```
+
+And you can also replace the label with some address.
 
 ### Usage
 
