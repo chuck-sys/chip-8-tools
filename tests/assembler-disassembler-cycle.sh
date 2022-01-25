@@ -12,9 +12,9 @@ ROOTDIR="$1"
 # Binaries
 BINS="${ROOTDIR}c8games/*"
 # Assembler binary
-ASMBIN="${ROOTDIR}build/Chip8_Assembler"
+ASMBIN="${ROOTDIR}build/assembler"
 # Disassembler binary
-DASMBIN="${ROOTDIR}build/Chip8_Disassembler"
+DASMBIN="${ROOTDIR}build/disassembler"
 
 # More sanity checking
 for f in ${ASMBIN} ${DASMBIN} ; do

@@ -20,893 +20,188 @@
 
 #include "Generator.h"
 #include "CmdParser.h"
-#include "Parser.h"
-#include "Utilities.h"
 
-Generator::Generator(AssemblerCommandParser* cmdParser) {
-    parser = new Parser(cmdParser->getSourceFilename());
+void CodeGenerator::parse(std::string filename) {
+    if (lexer != nullptr) {
+        delete lexer;
+        delete parser;
+    }
 
-    passes = cmdParser->isOnePass() ? 1 : 2;
-    error = false;
-    ind = 0;
-    lineno = 1;
-    code = new unsigned char[CodeMaxSize];
+    auto iss = new std::ifstream(filename, std::ios::binary);
+    if (!iss->good()) {
+        throw std::runtime_error("Could not open file for reading.");
+    }
+
+    lexer = new lex::Lexer(iss);
+    parser = new lex::Parser(*lexer, *this);
+
+    if (parser->parse() != 0) {
+        std::cerr << "Parse failed!" << std::endl;
+    }
+    delete iss;
 }
 
-Generator::~Generator() {
-    delete[] code;
+void CodeGenerator::writeCodeToFile(std::string filename) {
+    std::ofstream iss(filename, std::ios::binary);
+    if (iss.is_open()) {
+        char buffer[2];
+        for (auto instr : code) {
+            toBytecode(instr, buffer);
+            iss << buffer[0] << buffer[1];
+        }
+
+        iss.close();
+    } else {
+        throw std::runtime_error("Could not open file for writing.");
+    }
 }
 
-bool Generator::isInMap(string k) {
-    return (symbols_map.find(k) != symbols_map.end());
+void CodeGenerator::insertLabel(std::string identifier) {
+    symbolsMap[identifier] = ind;
 }
 
-string Generator::lnToString() {
-    string ret = "Line " + to_string(lineno) + ": ";
-    return ret;
-}
-
-void Generator::handlePError() {
-	throw GeneratorException(lnToString() + parser->ErrorMesg);
-}
-
-void Generator::genForOpcode() {
-    // Try all 3X opcodes mnemonics
-    // Go with the right ones (the ones on the site, not the
-    // ones that I've created)
-    string mnemonic = parser->Parsed;
-
-
-    if (mnemonic == "CLS") {
-        code[ind] = 0x00;
-        code[ind+1] = 0xe0;
-    }
-    else if (mnemonic == "RET") {
-        code[ind] = 0x00;
-        code[ind+1] = 0xee;
-    }
-    else if (mnemonic == "JP") {
-        Parser::token t = parser->getNextToken();
-        if (t == Parser::hexnum_token) {
-            int addr = stringToHex(parser->Parsed);
-
-            code[ind] = 0x10 | addr >> 8;
-            code[ind+1] = addr & 0xff;
-        }
-        else if (t == Parser::reg_token) {
-            if (parser->Parsed != "0") {
-                cerr << lnToString() << "Warning: JP doesn't work with registers other than `V0'. Defaulting to `V0'.\n";
-            }
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::hexnum_token) {
-                    int addr = stringToHex(parser->Parsed);
-
-                    code[ind] = 0xb0 | (addr >> 8);
-                    code[ind+1] = addr & 0xff;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a number or register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (t == Parser::mnemonic_token) {
-            // Its actually a label in context, but whatever, right?
-            string l = parser->Parsed;
-            if (isInMap(l)) {
-                int addr = symbols_map[l];
-
-                code[ind] = 0x10 | addr >> 8;
-                code[ind+1] = addr & 0xff;
-            }
-        }
-        else if (t == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "Expected address or label\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "CALL") {
-        Parser::token t = parser->getNextToken();
-        if (t == Parser::hexnum_token) {
-            int addr = stringToHex(parser->Parsed);
-
-            code[ind] = 0x20 | addr >> 8;
-            code[ind+1] = addr & 0xff;
-        }
-        else if (t == Parser::mnemonic_token) {
-            // Its actually a label in context, but whatever, right?
-            string l = parser->Parsed;
-            if (isInMap(l)) {
-                int addr = symbols_map[l];
-
-                code[ind] = 0x20 | addr >> 8;
-                code[ind+1] = addr & 0xff;
-            }
-        }
-        else if (t == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "Expected address or label\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SE") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::hexnum_token) {
-                    unsigned char kk = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x30 | (v & 0xf);
-                    code[ind+1] = kk;
-                }
-                else if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x50 | (v & 0xf);
-                    code[ind+1] = (v2&0xf) << 4;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a number or register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SNE") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::hexnum_token) {
-                    unsigned char kk = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x40 | (v & 0xf);
-                    code[ind+1] = kk;
-                }
-                else if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x90 | (v & 0xf);
-                    code[ind+1] = (v2 & 0xf) << 4;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a number or register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "LD") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::hexnum_token) {
-                    unsigned char kk = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x60 | (v&0xf);
-                    code[ind+1] = kk;
-                }
-                else if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x80 | (v&0xf);
-                    code[ind+1] = (v2&0xf) << 4;
-                }
-                else if (a2 == Parser::dt_token) {
-                    code[ind] = 0xf0 | (v&0xf);
-                    code[ind+1] = 0x7;
-                }
-                else if (a2 == Parser::key_token) {
-                    code[ind] = 0xf0 | (v&0xf);
-                    code[ind+1] = 0xa;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a number or register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::ireg_token) {
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token t = parser->getNextToken();
-                if (t == Parser::hexnum_token) {
-                    int addr = stringToHex(parser->Parsed);
-
-                    code[ind] = 0xa0 | addr >> 8;
-                    code[ind+1] = addr & 0xff;
-                }
-                else if (t == Parser::mnemonic_token) {
-                    // Its actually a label in context, but whatever, right?
-                    string l = parser->Parsed;
-                    if (isInMap(l)) {
-                        int addr = symbols_map[l];
-
-                        code[ind] = 0xa0 | addr >> 8;
-                        code[ind+1] = addr & 0xff;
-                    }
-                }
-                else if (t == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Expected address or label\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::dt_token) {
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token t = parser->getNextToken();
-                if (t == Parser::reg_token) {
-                    unsigned char v = stringToHex(parser->Parsed);
-
-                    code[ind] = 0xf0 | (v&0xf);
-                    code[ind+1] = 0x15;
-                }
-                else if (t == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Expected address or label\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::st_token) {
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token t = parser->getNextToken();
-                if (t == Parser::reg_token) {
-                    unsigned char v = stringToHex(parser->Parsed);
-
-                    code[ind] = 0xf0 | (v&0xf);
-                    code[ind+1] = 0x18;
-                }
-                else if (t == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Expected address or label\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "OR") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x80 | (v & 0xf);
-                    code[ind+1] = ((v2&0xf) << 4) | 1;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "AND") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x80 | (v & 0xf);
-                    code[ind+1] = ((v2&0xf) << 4) | 2;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "XOR") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x80 | (v & 0xf);
-                    code[ind+1] = ((v2&0xf) << 4) | 3;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "ADD") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::hexnum_token) {
-                    unsigned char kk = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x70 | (v & 0xf);
-                    code[ind+1] = kk;
-                }
-                else if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x80 | (v & 0xf);
-                    code[ind+1] = ((v2 & 0xf) << 4) | 4;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a number or register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::ireg_token) {
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token t = parser->getNextToken();
-                if (t == Parser::reg_token) {
-                    unsigned char v = stringToHex(parser->Parsed);
-
-                    code[ind] = 0xf0 | (v & 0xf);
-                    code[ind+1] = 0x1e;
-                }
-                else if (t == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Expected second argument to be a register\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SUB") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x80 | (v & 0xf);
-                    code[ind+1] = ((v2 & 0xf) << 4) | 5;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SUBN") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-
-                    code[ind] = 0x80 | (v & 0xf);
-                    code[ind+1] = ((v2 & 0xf) << 4) | 7;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SHR") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0x80 | (v & 0xf);
-            code[ind+1] = 0x6;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SHL") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0x80 | (v & 0xf);
-            code[ind+1] = 0xe;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SKP") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0xe0 | (v & 0xf);
-            code[ind+1] = 0x9e;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "SKNP") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0xe0 | (v & 0xf);
-            code[ind+1] = 0xa1;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "LDI") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0xf0 | (v & 0xf);
-            code[ind+1] = 0x29;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "BCD") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0xf0 | (v & 0xf);
-            code[ind+1] = 0x33;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "PUSH") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0xf0 | (v & 0xf);
-            code[ind+1] = 0x55;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "POP") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-
-            code[ind] = 0xf0 | (v & 0xf);
-            code[ind+1] = 0x65;
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "RND") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::hexnum_token) {
-                    unsigned char kk = stringToHex(parser->Parsed);
-
-                    code[ind] = 0xc0 | (v & 0xf);
-                    code[ind+1] = kk;
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a number or register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else if (mnemonic == "DRW") {
-        Parser::token a1 = parser->getNextToken();
-        if (a1 == Parser::reg_token) {
-            unsigned char v = stringToHex(parser->Parsed);
-            Parser::token comma = parser->getNextToken();
-            if (comma == Parser::comma_token) {
-                Parser::token a2 = parser->getNextToken();
-                if (a2 == Parser::reg_token) {
-                    unsigned char v2 = stringToHex(parser->Parsed);
-                    comma = parser->getNextToken();
-                    if (comma == Parser::comma_token) {
-                        Parser::token nib = parser->getNextToken();
-                        if (nib == Parser::hexnum_token) {
-                            unsigned char n = stringToHex(parser->Parsed);
-
-                            code[ind] = 0xd0 | (v & 0xf);
-                            code[ind+1] = (v2 << 4) | (n & 0xf);
-                        }
-                        else if (a2 == Parser::error_state) {
-                            handlePError();
-                        }
-                        else {
-                            cerr << lnToString() << "Third argument expected to be a number.\n";
-                            error = true;
-                        }
-                    }
-                    else if (comma == Parser::error_state) {
-                        handlePError();
-                    }
-                    else {
-                        cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                        error = true;
-                    }
-                }
-                else if (a2 == Parser::error_state) {
-                    handlePError();
-                }
-                else {
-                    cerr << lnToString() << "Second argument expected to be a register.\n";
-                    error = true;
-                }
-            }
-            else if (comma == Parser::error_state) {
-                handlePError();
-            }
-            else {
-                cerr << lnToString() << "Expected comma (`,') between arguments.\n";
-                error = true;
-            }
-        }
-        else if (a1 == Parser::error_state) {
-            handlePError();
-        }
-        else {
-            cerr << lnToString() << "First argument expected to be a register.\n";
-            error = true;
-        }
-    }
-    else {
-        cerr << lnToString() << "Generator: Unknown mnemonic `" << mnemonic << "'\n";
-        error = true;
-    }
+void CodeGenerator::insertInstruction(instruction_t instr) {
+    code.push_back(instr);
     ind += 2;
 }
 
-void Generator::run() {
-    for (int pass = 0; pass < passes; pass++) {
-        // Reset everything
-        parser->setPosition(0);
-        ind = 0;
+void CodeGenerator::toBytecode(instruction_t instr, char* output) {
+    using token = lex::Parser::token;
 
-        for (Parser::token t = parser->getNextToken();
-                t != Parser::eof_token;
-                t = parser->getNextToken()) {
-            switch (t) {
-                case Parser::error_state:
-                    // Print the error, along with the line it occured on
-                    handlePError();
-                    break;
-                case Parser::label_token:
-                    // Record where it lay
-                    symbols_map[parser->Parsed] = ind + 0x200;
-                    break;
-                case Parser::reg_token:
-                    break;
-                case Parser::hexnum_token:
-                    {
-                        // In the case of any numbers, insert them
-                        // directly into the code
-                        int data = stringToHex(parser->Parsed);
-                        code[ind] = data >> 8;
-                        code[ind+1] = data & 0xff;
-                        ind += 2;
-                        break;
-                    }
-                case Parser::comma_token:
-                    break;
-                case Parser::mnemonic_token:
-                    // The lazy man's way out
-                    genForOpcode();
-                    break;
-                case Parser::nl_token:
-                    lineno++;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+#define SYMNNN(op) { \
+    unsigned addr = symbolsMap[instr.label]; \
+    output[0] = op | addr >> 8; \
+    output[1] = addr & 0xff; \
+}
+#define NNN(op) { \
+    unsigned addr = instr.arg1.literal; \
+    output[0] = op | addr >> 8; \
+    output[1] = addr & 0xff; \
+}
+#define XNN(op) { \
+    output[0] = op | (instr.arg1.reg & 0xf); \
+    output[1] = instr.arg2.literal & 0xff; \
+}
+#define XYC(op, c) { \
+    output[0] = op | (instr.arg1.reg & 0xf); \
+    output[1] = ((instr.arg2.reg & 0xf) << 4) | (c & 0xf); \
+}
+#define XYN(op) { \
+    output[0] = op | (instr.arg1.reg & 0xf); \
+    output[1] = ((instr.arg2.reg & 0xf) << 4) | (instr.arg3.literal & 0xf); \
+}
+#define XCC(op, c) { \
+    output[0] = op | (instr.arg1.reg & 0xf); \
+    output[1] = c & 0xff; \
+}
+#define DATA() { \
+    output[0] = instr.arg1.literal >> 8; \
+    output[1] = instr.arg1.literal & 0xff; \
 }
 
-void Generator::output(string fn) {
-    ofstream of(fn, ios::binary);
-    if (of.is_open()) {
-        of.write(reinterpret_cast<char*>(code), ind);
-    } else {
-        cerr << "Error writing to file '" << fn << "'" << endl;
+    switch (instr.token) {
+        case token::CLS:
+            output[0] = 0x00;
+            output[1] = 0xe0;
+            break;
+        case token::RET:
+            output[0] = 0x00;
+            output[1] = 0xee;
+            break;
+        case token::JP:
+            SYMNNN(instr.arg1.token == token::REGISTER? 0xb0 : 0x10);
+            break;
+        case token::CALL:
+            SYMNNN(0x20);
+            break;
+        case token::SE:
+            if (instr.arg2.token == token::LITERAL) {
+                XNN(0x30);
+            } else if (instr.arg2.token == token::REGISTER) {
+                XYC(0x50, 0);
+            }
+            break;
+        case token::SNE:
+            if (instr.arg2.token == token::LITERAL) {
+                XNN(0x40);
+            } else if (instr.arg2.token == token::REGISTER) {
+                XYC(0x90, 0);
+            }
+            break;
+        case token::LD:
+            if (instr.arg1.token == token::REGISTER) {
+                if (instr.arg2.token == token::LITERAL) {
+                    XNN(0x60);
+                } else if (instr.arg2.token == token::REGISTER) {
+                    XYC(0x80, 0);
+                } else if (instr.arg2.token == token::DT) {
+                    XCC(0xf0, 0x07);
+                } else if (instr.arg2.token == token::K) {
+                    XCC(0xf0, 0x0a);
+                }
+            } else if (instr.arg1.token == token::IREG) {
+                NNN(0xa0);
+            } else if (instr.arg1.token == token::DT) {
+                XCC(0xf0, 0x15);
+            } else if (instr.arg1.token == token::ST) {
+                XCC(0xf0, 0x18);
+            }
+            break;
+        case token::OR:
+            XYC(0x80, 1);
+            break;
+        case token::AND:
+            XYC(0x80, 2);
+            break;
+        case token::XOR:
+            XYC(0x80, 3);
+            break;
+        case token::ADD:
+            if (instr.arg2.token == token::LITERAL) {
+                XNN(0x70);
+            } else if (instr.arg2.token == token::REGISTER) {
+                XYC(0x80, 4);
+            } else if (instr.arg1.token == token::IREG) {
+                XCC(0xf0, 0x1e);
+            }
+            break;
+        case token::SUB:
+            XYC(0x80, 5);
+            break;
+        case token::SHR:
+            XCC(0x80, 0x06);
+            break;
+        case token::SUBN:
+            XYC(0x80, 7);
+            break;
+        case token::SHL:
+            XCC(0x80, 0x0e);
+            break;
+        case token::RND:
+            XNN(0xc0);
+            break;
+        case token::DRW:
+            XYN(0xd0);
+            break;
+        case token::SKP:
+            XCC(0xe0, 0x9e);
+            break;
+        case token::SKNP:
+            XCC(0xe0, 0xa1);
+            break;
+        case token::BCD:
+            XCC(0xf0, 0x33);
+            break;
+        case token::PUSH:
+            XCC(0xf0, 0x55);
+            break;
+        case token::POP:
+            XCC(0xf0, 0x65);
+            break;
+        case token::LITERAL:
+            DATA();
+            break;
+        default:
+            break;
     }
-    of.close();
 }

@@ -19,7 +19,6 @@
 #include <iostream>
 #include <memory>
 
-#include "Parser.h"
 #include "Generator.h"
 #include "CmdParser.h"
 
@@ -32,10 +31,10 @@ int main(int argc, char **argv) {
 	try {
 		cmdParser = unique_ptr<AssemblerCommandParser>(new AssemblerCommandParser(argc, argv));
 
-		unique_ptr<Generator> generator(new Generator(cmdParser.get()));
+		unique_ptr<CodeGenerator> generator(new CodeGenerator());
 
-		generator->run();
-		generator->output(cmdParser->getBinaryFilename());
+		generator->parse(cmdParser->getSourceFilename());
+		generator->writeCodeToFile(cmdParser->getBinaryFilename());
 	} catch (AssemblerCommandException& e) {
 		if (e.isBadError()) {
 			cerr << "Command line error: " << e.what() << endl;
@@ -43,10 +42,6 @@ int main(int argc, char **argv) {
 		if (e.isNeedHelp()) {
 			cmdParser->printHelp();
 		}
-	} catch (ParseException& e) {
-		cerr << "Parsing error: " << e.what() << endl;
-	} catch (GeneratorException& e) {
-		cerr << "Code generation error: " << e.what() << endl;
 	}
 
 	return 0;

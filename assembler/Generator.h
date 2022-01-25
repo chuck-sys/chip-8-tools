@@ -18,69 +18,33 @@
 #ifndef GENERATOR_H_
 #define GENERATOR_H_
 
+#include <memory>
 #include <map>
 #include <string>
-#include <exception>
+#include <vector>
 
-#include "CmdParser.h"
-#include "Parser.h"
+#include "assembler/lex.h"
+#include "grammar.tab.h"
 
-using namespace std;
+class CodeGenerator {
+    public:
+        CodeGenerator() {};
+        ~CodeGenerator() { delete parser; delete lexer; }
 
-class Generator {
-private:
-    Parser* parser;
+        void parse(std::string);
+        void writeCodeToFile(std::string);
 
-    map<string, unsigned> symbols_map;
+        void insertLabel(std::string);
+        void insertInstruction(instruction_t);
 
-    unsigned char* code;
-    unsigned ind;
-    unsigned lineno;
+    private:
+        unsigned ind = 0x200;   // all programs start at 0x200
+        std::vector<instruction_t> code;
+        std::map<std::string, unsigned> symbolsMap;
+        lex::Parser* parser = nullptr;
+        lex::Lexer* lexer = nullptr;
 
-    /* Handles incrementing the indexer too */
-    void genForOpcode();
-
-    void handlePError();
-
-    inline bool isInMap(string);
-
-    string lnToString();
-
-public:
-    static const unsigned CodeMaxSize = 2500;
-    int passes;
-    bool error;
-
-    Generator(AssemblerCommandParser*);
-    ~Generator();
-
-    /* Pass over the code n times
-     *
-     * The first pass would parse all the tokens
-     * that aren't symbols (labels). It will store
-     * all label names into a map.
-     *
-     * The second pass would find all the undefined
-     * 'holes' in the generated code and fill them in.
-     */
-    void run();
-
-    /* (Should only be executed after you have finished
-     * generating the code)
-     *
-     * Outputs code to specified output file
-     */
-    void output(string);
-};
-
-class GeneratorException : public exception {
-private:
-	string msg;
-
-public:
-	GeneratorException(string huh): msg(huh) {};
-
-	virtual const char* what() const throw() {return msg.c_str();}
+        void toBytecode(instruction_t, char*);
 };
 
 #endif

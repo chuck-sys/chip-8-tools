@@ -15,13 +15,20 @@ endif
 
 # flex
 lgen = generator(flex,
-  output: '@PLAINNAME@.yy.c',
+  output: '@PLAINNAME@.yy.cc',
   arguments: ['-o', '@OUTPUT@', '@INPUT@']
 )
+lfiles = lgen.process('assembler/lex.l')
+
+# bison
+pgen = generator(bison,
+  output: ['@BASENAME@.tab.cc', '@BASENAME@.tab.h'],
+  arguments: ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@']
+)
+pfiles = pgen.process('assembler/grammar.y')
 
 # Emulator
 executable('emulator',
-  'emulator/Chip_8.h',
   'emulator/Chip_8.cpp',
   'emulator/Emulator.cpp',
   dependencies: sfml_dep
@@ -34,13 +41,10 @@ executable('disassembler',
 
 # Assembler
 executable('assembler',
-  'assembler/Parser.h',
-  'assembler/Parser.cpp',
-  'assembler/CmdParser.h',
-  'assembler/Generator.h',
-  'assembler/Utilities.h',
-  'assembler/Assembler.cpp',
+  pfiles,
+  lfiles,
   'assembler/CmdParser.cpp',
   'assembler/Generator.cpp',
   'assembler/Utilities.cpp',
+  'assembler/Assembler.cpp',
 )
