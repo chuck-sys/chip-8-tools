@@ -2,7 +2,8 @@
 
 ```
 p ::= (begin e ...)
-e ::= (cls)
+e ::= (begin e ...)
+    | (cls)
     | (ret)
     | (jp location)
     | (jp reg location)
@@ -32,6 +33,7 @@ e ::= (cls)
     | (push reg)
     | (pop reg)
     | (label fixed-location)
+    | (data literal ...)
 
 location ::= fixed-location
            | literal
@@ -47,6 +49,6 @@ literal ::= number?
 fixed-location ::= label?
 ```
 
-In this pass, we remove the last register `VF` since nobody is supposed to be using it. But other than
-that, it is a straightforward translation from `L0` to assembly. Since this is the lowest level, we don't
-even have to do checking for syntax issues.
+In this pass, we remove the last register `VF` since nobody is supposed to be using it. We also implement
+expression nesting here. Since this is the lowest level, we don't even have to do checking for syntax
+issues. Which is why this pass is the simplest to code.
