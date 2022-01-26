@@ -18,6 +18,7 @@
   [[_ a b]]
   (if (nil? b)
     ; eg: jp start
+    ; eg: jp 0x200 (the compiler takes numbers via stoul)
     (str "JP " a)
     ; eg: jp v0, start
     (str "JP " a ", " b)))

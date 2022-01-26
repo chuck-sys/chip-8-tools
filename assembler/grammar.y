@@ -245,7 +245,7 @@ register
     ;
 
 literal
-    : LITERAL                       { $$ = std::stoul($1, nullptr, 16); }
+    : LITERAL                       { $$ = std::stoul($1, nullptr, 0); }
 
 %%
 
