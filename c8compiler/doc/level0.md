@@ -2,6 +2,7 @@
 
 ```
 p ::= (begin e ...)
+
 e ::= (begin e ...)
     | (cls)
     | (ret)
