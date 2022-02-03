@@ -1,10 +1,11 @@
 #lang racket
-(require scribble/bettergrammar)
+(require scribble/bettergrammar
+         c8compiler/utilities)
 
 (define-grammar
   level0-lang
 
-  #:literals (integer? symbol?)
+  #:literals (int4? int8? int12? int16? symbol?)
   #:datum-literals (begin cls ret jp call se sne ld add sub subn or and xor shr shl rnd drw skp sknp bcd
                           push pop label data i dt st k v0 v1 v2 v3 v4 v5 v6 v7 v8 v9 va vb vc vd ve)
   (p (begin e ...))
@@ -23,24 +24,30 @@
      (xor reg reg)
      (shr reg)
      (shl reg)
-     (rnd reg literal)
-     (drw reg reg literal)
+     (rnd reg byte)
+     (drw reg reg nibble)
      (skp reg)
      (sknp reg)
      (bcd reg)
      (push reg)
      (pop reg)
      (label fixed-location)
-     (data literal ...)
+     (data word ...)
      )
 
-  (location fixed-location literal)
+  (location fixed-location literal-location)
 
-  (token reg literal)
+  (token reg byte)
 
   (reg v0 v1 v2 v3 v4 v5 v6 v7 v8 v9 va vb vc vd ve)
 
-  (literal integer?)
+  (word int16?)
+
+  (literal-location int12?)
+
+  (byte int8?)
+
+  (nibble int4?)
 
   (fixed-location symbol?))
 

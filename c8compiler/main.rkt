@@ -26,7 +26,9 @@
 ;; Code here
 (require
   racket/match
-  racket/string)
+  racket/string
+
+)
 
 ; sexp->string: s-expression -> string
 (define (sexp->string sexp)

@@ -1,5 +1,5 @@
 #lang info
-(define collection "compiler")
+(define collection "c8compiler")
 (define deps '("base"))
 (define build-deps '("scribble-lib"
                      "racket-doc"

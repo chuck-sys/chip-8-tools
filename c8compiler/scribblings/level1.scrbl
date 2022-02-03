@@ -1,11 +1,13 @@
 #lang scribble/manual
-@require[@for-label[compiler
+@require[@for-label[c8compiler/utilities
                     racket]
          scribble/bettergrammar
+         c8compiler/utilities
          "level0.rkt"
          "level1.rkt"]
 
-@title{Level 1: Getting the most out of our "stack"}
+@title{Abstracting registers and memory, kinda}
+@section{Getting the most out of our "stack"}
 
 Usually with this pass we try to abstract away registers in favour of locations in memory. But since only
 @tt{I} register is 16-bit (and thus can address all program memory), it is impossible to effectively
@@ -31,6 +33,12 @@ of @tt{V0}, since we would freqently need it to store variables. This also means
 larger than @code{#xFFF - #x200 - #x0FF = #xD00 = 3328} bytes.
 
 @bettergrammar*-diff[level0-lang level1-lang]
+
+To make it even easier to read, we write all offset forms @code{(ve + x)} as @code{fv.x}, where @code{x}
+is an offset and @code{fv} is a symbol. The whole thing is a symbol, and is supposed to make assigning
+memory locations and registers a bit easier.
+
+@section{Assigning registers and memory locations to abstract locations}
 
 Next, we'd want to abstract away both types of registers (both registers and offsets). We'll call these
 objects @italic{abstract locations}. Because of scope and shadowing issues, abstract locations are symbols

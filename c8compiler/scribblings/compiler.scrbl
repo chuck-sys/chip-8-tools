@@ -21,3 +21,4 @@ in Clojure, and if not absent, then severely lacking:
 ]
 
 @include-section["passes.scrbl"]
+@include-section["utilities.scrbl"]

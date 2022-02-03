@@ -4,7 +4,7 @@
          scribble/bettergrammar
          "level0.rkt"]
 
-@title{Level 0: From S-expressions to Strings}
+@title{From S-expressions to Strings}
 
 @bettergrammar*[level0-lang]
 
