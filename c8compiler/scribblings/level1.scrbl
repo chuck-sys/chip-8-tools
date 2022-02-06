@@ -19,6 +19,11 @@ passes we will try to cut down on register use by checking if reuse is possible.
 We store variables in an upwards growing stack that starts at @code{I = #xF00}, and every time we want a
 variable, we do:
 
+@margin-note{
+    We have conveniently placed the compiler function @racket[(current-base-stack-address)] in
+    @racket[c8compiler/utilities], which just returns @racket[#xf00].
+}
+
 @codeblock{
 ; variable at offset + 12
 LD I, #xF0C         ; #xF00 (stack start) + #x00C (offset)
@@ -30,13 +35,48 @@ PUSH V0
 
 Which will store the 8-bit value in @tt{V0}. This also means that our programs cannot meaningfully make use
 of @tt{V0}, since we would freqently need it to store variables. This also means that our programs cannot be
-larger than @code{#xFFF - #x200 - #x0FF = #xD00 = 3328} bytes.
+larger than @code{#xFFF - #x200 - #x0FF = #xD00 = 3328} bytes. Since we want instructions to be able to
+use both places for offsets, and because some instructions must have these two offsets existing at the
+same time (for example, the skip-equals and skip-not-equals instructions, or any of the load
+instructions), other than @tt{V0}, we must also use another register to store the value of the second
+offset. So for instance, these
+
+@codeblock{
+(begin
+   (se fv.0 fv.1))
+
+(begin
+   (add fv.0 fv.1))
+}
+
+Would turn into these
+
+@codeblock{
+(begin
+   (ld i #xf01)
+   (pop v0)
+   (ld ve v0)
+   (ld i #xf00)
+   (pop v0)
+   (ld v0 v0)          ; useless instruction, removed in some optimization step
+   (se v0 ve))
+
+(begin
+   (ld i #xf01)
+   (pop v0)
+   (ld ve v0)
+   (add v0 ve)
+   (ld i #xf00)
+   (push v0))
+}
+
+The biggest difference is that instructions that manipulate memory have @tt{push} codes and ones that read
+memory have @tt{pop} codes. This also means we are able to remove these from the language to simplify.
 
 @bettergrammar*-diff[level0-lang level1-lang]
 
-To make it even easier to read, we write all offset forms @code{(ve + x)} as @code{fv.x}, where @code{x}
-is an offset and @code{fv} is a symbol. The whole thing is a symbol, and is supposed to make assigning
-memory locations and registers a bit easier.
+We write all offset forms as @code{fv.x}, where @code{x} is an offset and @code{fv} is a symbol. The whole
+thing is a symbol, and is supposed to make assigning memory locations and registers a bit easier.
 
 @section{Assigning registers and memory locations to abstract locations}
 

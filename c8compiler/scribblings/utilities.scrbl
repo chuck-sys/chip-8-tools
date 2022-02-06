@@ -9,6 +9,19 @@
 @title{Useful utilities}
 @defmodule[c8compiler/utilities]
 
+@section{Compiler settings}
+
+@defproc[(current-base-stack-address) int12?]{
+    Return the base address for the stack of variables.
+
+    @examples[
+        #:eval sb
+        (current-base-stack-address)
+    ]
+}
+
+@section{Data types}
+
 @defproc[(fvar? (x any/c)) boolean?]{
     Return true if @racket[x] is a frame variable. Return false otherwise.
 

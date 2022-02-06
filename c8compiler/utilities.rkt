@@ -1,5 +1,7 @@
 #lang racket
 
+(define (current-base-stack-address) #xf00)
+
 (define (fvar? x)
   (and (symbol? x)
        (match (string-split (symbol->string x) ".")
@@ -40,6 +42,8 @@
            [int8? (-> any/c boolean?)]
            [int12? (-> any/c boolean?)]
            [int16? (-> any/c boolean?)]
+
+           [current-base-stack-address (-> int12?)]
            ))
 
 (module+ test
